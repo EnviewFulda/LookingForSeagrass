@@ -1,17 +1,18 @@
 ##################
 #---Experiment1---
 ##################
-DEPTH_MIN=0.0
-DEPTH_MAX=10.0
-EVAL_TRAIN="/quicktest/train.json"
-EVAL_TEST="/quicktest/test.json"
-EVAL_VALIDATE="/quicktest/validate.json"
-
 GRAPH="/home/thomas/cnn_feature_extractor/tf_inception/classify_image_graph_def.pb"
 FOLDER_ROOT="/home/thomas/experiments/dataset"
+
 FOLDER_IMAGES="/images"
 FOLDER_GROUND_TRUTH="/ground-truth"
+EVAL_TRAIN="/train.json"
+EVAL_TEST="/test.json"
+EVAL_VALIDATE="/validate.json"
+DEPTH_MIN=0.0
+DEPTH_MAX=10.0
 PATCH_SIZE=120
+
 
 
 python3 ../main.py \
