@@ -14,7 +14,7 @@ FOLDER_GROUND_TRUTH="/ground-truth"
 PATCH_SIZE=120
 
 
-python3 ../src/seagrass/main.py \
+python3 ../main.py \
 --pattern SP_SLIC \
 --features cnn \
 --graph $GRAPH \
@@ -32,7 +32,7 @@ python3 ../src/seagrass/main.py \
 --depth_max $DEPTH_MAX \
 
 
-python3 ../src/seagrass/main.py \
+python3 ../main.py \
 --pattern SP_CW \
 --features cnn \
 --graph $GRAPH \
@@ -50,7 +50,7 @@ python3 ../src/seagrass/main.py \
 --depth_max $DEPTH_MAX \
 
 
-python3 ../src/seagrass/main.py \
+python3 ../main.py \
 --pattern RP \
 --features cnn \
 --graph $GRAPH \
@@ -71,7 +71,7 @@ python3 ../src/seagrass/main.py \
 ##################
 
 
-python3 ../src/seagrass/main.py \
+python3 ../main.py \
 --pattern SP_SLIC \
 --features hog \
 --graph $GRAPH \
@@ -89,7 +89,7 @@ python3 ../src/seagrass/main.py \
 --depth_max $DEPTH_MAX \
 
 
-python3 ../src/seagrass/main.py \
+python3 ../main.py \
 --pattern SP_CW \
 --features hog \
 --graph $GRAPH \
@@ -107,7 +107,7 @@ python3 ../src/seagrass/main.py \
 --depth_max $DEPTH_MAX \
 
 
-python3 ../src/seagrass/main.py \
+python3 ../main.py \
 --pattern RP \
 --features hog \
 --graph $GRAPH \
@@ -128,7 +128,7 @@ python3 ../src/seagrass/main.py \
 ##################
 
 
-python3 ../src/seagrass/main.py \
+python3 ../main.py \
 --pattern SP_SLIC \
 --features lbp \
 --graph $GRAPH \
@@ -146,7 +146,7 @@ python3 ../src/seagrass/main.py \
 --depth_max $DEPTH_MAX \
 
 
-python3 ../src/seagrass/main.py \
+python3 ../main.py \
 --pattern SP_CW \
 --features lbp \
 --graph $GRAPH \
@@ -164,7 +164,7 @@ python3 ../src/seagrass/main.py \
 --depth_max $DEPTH_MAX \
 
 
-python3 ../src/seagrass/main.py \
+python3 ../main.py \
 --pattern RP \
 --features lbp \
 --graph $GRAPH \
