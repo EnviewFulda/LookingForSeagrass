@@ -225,10 +225,8 @@ def prediction(root_path, json_path, pattern, features, patch_size_height, patch
 
             dumpname = get_dumpname(args)
             outdir = os.path.join(os.path.split(args.output)[0], dumpname)
-            # out_file_name = os.path.splitext(os.path.basename(args.output))[0]
-            # outdir = os.path.join(os.path.split(args.output)[0], out_file_name)
-            if not os.path.exists(outdir):
-                os.mkdir(outdir)
+            #if not os.path.exists(outdir):
+            #    os.mkdir(outdir)
             base_path = os.path.join(outdir, '{}.predict'.format(os.path.basename(path_rgb_image)))
             feat_path = base_path + '.feat'
             segment_path = base_path + '.segment'
