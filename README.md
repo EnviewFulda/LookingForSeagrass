@@ -26,3 +26,5 @@ The full paper **Looking for Seagrass: Deep Learning for Visual Coverage Estimat
 ## Utils
 
 ## Experiments
+### Deep Net for feature extraction
+http://download.tensorflow.org/models/image/imagenet/inception-2015-12-05.tgz
