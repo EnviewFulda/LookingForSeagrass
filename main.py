@@ -223,99 +223,104 @@ def prediction(root_path, json_path, pattern, features, patch_size_height, patch
             loaded_picture = cv2.imread(path_rgb_image)
             path_rgb_pixelmap = os.path.join(root_path,i["ground-truth"])
             loaded_pixelmap = cv2.imread(path_rgb_pixelmap)
+            if loaded_picture is not None and loaded_pixelmap is not None:
+                height = loaded_picture.shape[0]
+                width  = loaded_picture.shape[1]
 
-            height = loaded_picture.shape[0]
-            width  = loaded_picture.shape[1]
+                dumpname = get_dumpname(args)
+                outdir = os.path.join(os.path.split(args.output)[0], dumpname)
+                #if not os.path.exists(outdir):
+                #    os.mkdir(outdir)
+                base_path = os.path.join(outdir, '{}.predict'.format(os.path.basename(path_rgb_image)))
+                feat_path = base_path + '.feat'
+                segment_path = base_path + '.segment'
+                # patches = None
+                # if not os.path.exists(path):
+                # three cases: RP, SP_SLIC, SP_CW
+                # if SP_SLIC or SP_CW -> generate rect patches from superpixel
 
-            dumpname = get_dumpname(args)
-            outdir = os.path.join(os.path.split(args.output)[0], dumpname)
-            #if not os.path.exists(outdir):
-            #    os.mkdir(outdir)
-            base_path = os.path.join(outdir, '{}.predict'.format(os.path.basename(path_rgb_image)))
-            feat_path = base_path + '.feat'
-            segment_path = base_path + '.segment'
-            # patches = None
-            # if not os.path.exists(path):
-            # three cases: RP, SP_SLIC, SP_CW
-            # if SP_SLIC or SP_CW -> generate rect patches from superpixel
+                # if os.path.exists(segment_path):
+                if False:
+                    with open( segment_path, "rb" ) as f:
+                        segments = pickle.load(f)
+                        patches = None
+                else:
+                    if pattern == "RP": # rectangle pattern
+                        coordinates = rectangle.create_coordinates_list (patch_size_height, patch_size_width, height, width)
+                        patches = rectangle.patches(loaded_picture, coordinates, patch_size_height, patch_size_width)
 
-            # if os.path.exists(segment_path):
-            if False:
-                with open( segment_path, "rb" ) as f:
-                    segments = pickle.load(f)
-                    patches = None
-            else:
-                if pattern == "RP": # rectangle pattern
+                    if pattern == "SP_SLIC": # simple linear iterative clustering
+                        patches, segments = superpixel.patches(loaded_picture, "SP_SLIC", patch_size_height, patch_size_width, height, width) # Patches wurden in Rechtecke umgewandelt, Segmente werden als Koordinaten beschrieben
+
+                    if pattern == "SP_CW": # compact watershed
+                        patches, segments = superpixel.patches(loaded_picture, "SP_CW", patch_size_height, patch_size_width, height, width) # Patches wurden in Rechtecke umgewandelt, Segmente werden als Koordinaten beschrieben
+                    # if "SP" in pattern:
+                    #     with open(segment_path, "wb") as f:
+                    #         pickle.dump(segments, f)
+
+                # if pattern == "RP": # rectangle pattern
+                #     coordinates = rectangle.create_coordinates_list (patch_size_height, patch_size_width, height, width)
+                #     patches = rectangle.patches(loaded_picture, coordinates, patch_size_height, patch_size_width)
+                #
+                # if pattern == "SP_SLIC": # simple linear iterative clustering
+                #     patches, segments = superpixel.patches(loaded_picture, "SP_SLIC", patch_size_height, patch_size_width, height, width) # Patches wurden in Rechtecke umgewandelt, Segmente werden als Koordinaten beschrieben
+                #
+                # if pattern == "SP_CW": # compact watershed
+                #     patches, segments = superpixel.patches(loaded_picture, "SP_CW", patch_size_height, patch_size_width, height, width) # Patches wurden in Rechtecke umgewandelt, Segmente werden als Koordinaten beschrieben
+
+
+                # feature extraction: LBP, HOG, CNN
+                X = get_features(features, patches, feat_path)
+                # if (args.features == "hog"): features = hog.features(patches, MULTIPLE)
+                # if (args.features == "cnn"): features = cnn.features(patches, MULTIPLE)
+                # if (args.features == "lbp"): features = lbp.features(patches, MULTIPLE)
+
+
+                # prediction
+                prediction = svm.predict(X, MULTIPLE)
+
+
+                # Zeitmessung
+                elapsed_time = (time.time() - start_time) * 1000 # ms
+                global sumarized_prediction_time
+                sumarized_prediction_time += elapsed_time
+
+
+
+                # calculate pixelmaps
+                if pattern == "RP":
                     coordinates = rectangle.create_coordinates_list (patch_size_height, patch_size_width, height, width)
-                    patches = rectangle.patches(loaded_picture, coordinates, patch_size_height, patch_size_width)
+                    classifier_pixel_map = rectangle.logical_pixelmap(prediction, height, width, coordinates, patch_size_height, patch_size_width)
 
-                if pattern == "SP_SLIC": # simple linear iterative clustering
-                    patches, segments = superpixel.patches(loaded_picture, "SP_SLIC", patch_size_height, patch_size_width, height, width) # Patches wurden in Rechtecke umgewandelt, Segmente werden als Koordinaten beschrieben
-
-                if pattern == "SP_CW": # compact watershed
-                    patches, segments = superpixel.patches(loaded_picture, "SP_CW", patch_size_height, patch_size_width, height, width) # Patches wurden in Rechtecke umgewandelt, Segmente werden als Koordinaten beschrieben
-                # if "SP" in pattern:
-                #     with open(segment_path, "wb") as f:
-                #         pickle.dump(segments, f)
-
-            # if pattern == "RP": # rectangle pattern
-            #     coordinates = rectangle.create_coordinates_list (patch_size_height, patch_size_width, height, width)
-            #     patches = rectangle.patches(loaded_picture, coordinates, patch_size_height, patch_size_width)
-            #
-            # if pattern == "SP_SLIC": # simple linear iterative clustering
-            #     patches, segments = superpixel.patches(loaded_picture, "SP_SLIC", patch_size_height, patch_size_width, height, width) # Patches wurden in Rechtecke umgewandelt, Segmente werden als Koordinaten beschrieben
-            #
-            # if pattern == "SP_CW": # compact watershed
-            #     patches, segments = superpixel.patches(loaded_picture, "SP_CW", patch_size_height, patch_size_width, height, width) # Patches wurden in Rechtecke umgewandelt, Segmente werden als Koordinaten beschrieben
+                if pattern == "SP_SLIC" or pattern == "SP_CW":
+                    classifier_pixel_map = superpixel.logical_pixelmap(segments, prediction, height, width) # In Segments stecken die Koordinaten jedes Pixels für das Segment
 
 
-            # feature extraction: LBP, HOG, CNN
-            X = get_features(features, patches, feat_path)
-            # if (args.features == "hog"): features = hog.features(patches, MULTIPLE)
-            # if (args.features == "cnn"): features = cnn.features(patches, MULTIPLE)
-            # if (args.features == "lbp"): features = lbp.features(patches, MULTIPLE)
+                # Evaluation
+                annotated_logical_pixelmap = rgb_pixelmap_to_logical_pixelmap(loaded_pixelmap)
 
+                dict_bundle = evaluate (i["image"], classifier_pixel_map, annotated_logical_pixelmap)
 
-            # prediction
-            prediction = svm.predict(X, MULTIPLE)
-
-
-            # Zeitmessung
-            elapsed_time = (time.time() - start_time) * 1000 # ms
-            global sumarized_prediction_time
-            sumarized_prediction_time += elapsed_time
+                global list_eval
+                list_eval.append(dict_bundle)
 
 
 
-            # calculate pixelmaps
-            if pattern == "RP":
-                coordinates = rectangle.create_coordinates_list (patch_size_height, patch_size_width, height, width)
-                classifier_pixel_map = rectangle.logical_pixelmap(prediction, height, width, coordinates, patch_size_height, patch_size_width)
-
-            if pattern == "SP_SLIC" or pattern == "SP_CW":
-                classifier_pixel_map = superpixel.logical_pixelmap(segments, prediction, height, width) # In Segments stecken die Koordinaten jedes Pixels für das Segment
-
-
-            # Evaluation
-            annotated_logical_pixelmap = rgb_pixelmap_to_logical_pixelmap(loaded_pixelmap)
-
-            dict_bundle = evaluate (i["image"], classifier_pixel_map, annotated_logical_pixelmap)
-
-            global list_eval
-            list_eval.append(dict_bundle)
-
-
-
-            # Debug
-            if (args.mode == "debug"):
-                # Anzeigen des Bildes mit eingezeichnetem Seegras
-                picture = ink_image(loaded_picture, classifier_pixel_map)
-                if show:
-                    cv2.imshow(" ", picture)
-                    cv2.waitKey(0)
-                if write:
-                    cv2.imwrite('debug_inked_image.jpg', picture)
-                    input('See written images at: {}'.format(os.getcwd()))
+                # Debug
+                if (args.mode == "debug"):
+                    # Anzeigen des Bildes mit eingezeichnetem Seegras
+                    picture = ink_image(loaded_picture, classifier_pixel_map)
+                    if show:
+                        cv2.imshow(" ", picture)
+                        cv2.waitKey(0)
+                    if write:
+                        cv2.imwrite('debug_inked_image.jpg', picture)
+                        input('See written images at: {}'.format(os.getcwd()))
+            else:
+                if loaded_pixelmap is None:
+                    msg.timemsg('Could not load pixelmap: {}'.format(path_rgb_pixelmap))
+                if loaded_picture is None:
+                    msg.timemsg('Could not load image: {}'.format(path_rgb_image))
 
 
 
