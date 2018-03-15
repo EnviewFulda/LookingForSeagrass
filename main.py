@@ -132,23 +132,26 @@ def generate_training_data(root_path, json_path, patch_size_height, patch_size_w
             path_rgb_image = os.path.join(root_path,i["image"])
 
             rgb_image = cv2.imread(path_rgb_image)
-            if show:
-                cv2.imshow(" ", rgb_image)
-                cv2.waitKey(0)
+            if rgb_image is not None:
+                if show:
+                    cv2.imshow(" ", rgb_image)
+                    cv2.waitKey(0)
 
-            path_rgb_pixelmap = os.path.join(root_path,i["ground-truth"])
-            rgb_pixelmap = cv2.imread(path_rgb_pixelmap)
-            pos_patches, neg_patches = generate_patches (rgb_image, rgb_pixelmap, patch_size_height, patch_size_width)
+                path_rgb_pixelmap = os.path.join(root_path,i["ground-truth"])
+                rgb_pixelmap = cv2.imread(path_rgb_pixelmap)
+                pos_patches, neg_patches = generate_patches (rgb_image, rgb_pixelmap, patch_size_height, patch_size_width)
 
 
-            # gehe in die Listen rein
-            for i in pos_patches:
-                list_patches.append(i) # hole positiven Patch
-                list_labels.append(1) # setze Label dieses Patches auf 1
+                # gehe in die Listen rein
+                for i in pos_patches:
+                    list_patches.append(i) # hole positiven Patch
+                    list_labels.append(1) # setze Label dieses Patches auf 1
 
-            for i in neg_patches:
-                list_patches.append(i) # hole negativen Patch
-                list_labels.append(0) # setze Label dieses Patches auf 0
+                for i in neg_patches:
+                    list_patches.append(i) # hole negativen Patch
+                    list_labels.append(0) # setze Label dieses Patches auf 0
+            else:
+                msg.timemsg('Could not load image: {}'.format(path_rgb_image))
 
     return list_patches, list_labels
 
