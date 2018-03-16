@@ -9,7 +9,7 @@ style.use("ggplot")
 import argparse
 import os
 import pickle
-os.environ["CUDA_VISIBLE_DEVICES"]="0"
+os.environ["CUDA_VISIBLE_DEVICES"]="1"
 import classifier.dataset
 import classifier.hog as hog
 import classifier.cnn as cnn
@@ -213,8 +213,10 @@ def get_dumpname(args):
     return dumpname
 
 def prediction(root_path, json_path, pattern, features, patch_size_height, patch_size_width, depth_min, depth_max, args, show=False, write=True):
-
-    for i in json.load(open(root_path + "/" + json_path)):
+    test_json = json.load(open(root_path + "/" + json_path))
+    n_test = len(test_json)
+    counter = 1
+    for i in test_json:
         if check_depth (i["depth"], depth_min, depth_max):
 
             # Zeitmessung
@@ -271,7 +273,7 @@ def prediction(root_path, json_path, pattern, features, patch_size_height, patch
 
 
                 # feature extraction: LBP, HOG, CNN
-                X = get_features(features, patches, feat_path, serialize=SERIALIZE_FEATURES, chunck_size=CHUNCK_SIZE)
+                X = get_features(features, patches, feat_path, serialize=False, chunck_size=CHUNCK_SIZE)
                 # if (args.features == "hog"): features = hog.features(patches, MULTIPLE)
                 # if (args.features == "cnn"): features = cnn.features(patches, MULTIPLE)
                 # if (args.features == "lbp"): features = lbp.features(patches, MULTIPLE)
@@ -322,7 +324,8 @@ def prediction(root_path, json_path, pattern, features, patch_size_height, patch
                     msg.timemsg('Could not load pixelmap: {}'.format(path_rgb_pixelmap))
                 if loaded_picture is None:
                     msg.timemsg('Could not load image: {}'.format(path_rgb_image))
-
+            msg.timemsg('Prediction Progress: {}%'.format(float(counter/n_test)*100))
+            counter += 1
 
 
 
@@ -396,35 +399,44 @@ def __dump(X, path):
 
 
 def get_features(feature_method, patches, path, serialize=True, chunck_size=100000):
-    path_exists = os.path.exists(path)
-    if chunck_size is None:
-        if path_exists:
+    if serialize:
+        if os.path.exists(path):
             X = __load(path)
         else:
             X = get_feat(feature_method, patches)
             __dump(X, path)
     else:
-        start = 0
-        step = chunck_size
-        n_feat = len(X)
-        n_iter = n_feat/ chunck_size
-        if n_feat % chunck_size != 0:
-            n_iter += 1
-        for i in range(n_iter):
-            if start+step > n_feat:
-                step = n_feat % chunck_size
-            new_path = path + str(start)
-            if not os.path.exists(path):
-                if i == 0:
-                    X = get_feat(feature_method, patches)
-                __dump(X[start:start+step], path)
-            else:
-                X_split = __load(path)
-                if i == 0:
-                    X = X_split
-                else:
-                    X = np.vstack((X, X_split))
-            start += step
+        X = get_feat(feature_method, patches)
+
+    # path_exists = os.path.exists(path)
+    # if chunck_size is None:
+    #     if path_exists:
+    #         X = __load(path)
+    #     else:
+    #         X = get_feat(feature_method, patches)
+    #         __dump(X, path)
+    # else:
+    #     start = 0
+    #     step = chunck_size
+    #     n_feat = len(X)
+    #     n_iter = n_feat/ chunck_size
+    #     if n_feat % chunck_size != 0:
+    #         n_iter += 1
+    #     for i in range(n_iter):
+    #         if start+step > n_feat:
+    #             step = n_feat % chunck_size
+    #         new_path = path + str(start)
+    #         if not os.path.exists(path):
+    #             if i == 0:
+    #                 X = get_feat(feature_method, patches)
+    #             __dump(X[start:start+step], path)
+    #         else:
+    #             X_split = __load(path)
+    #             if i == 0:
+    #                 X = X_split
+    #             else:
+    #                 X = np.vstack((X, X_split))
+    #         start += step
     return X
 
         
