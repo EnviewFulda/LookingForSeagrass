@@ -116,9 +116,10 @@ def ink_image(image, pixel_map):
 
 
 
-def generate_training_data(root_path, json_path, patch_size_height, patch_size_width, depth_min, depth_max, show=False):
+def generate_training_data(root_path, json_path, patch_size_height, patch_size_width, depth_min, depth_max, show=False, batch_size=2000):
     list_patches = []
     list_labels = []
+    counter = 0
 
     for i in json.load(open(root_path + "/" + json_path)):
         """
@@ -151,12 +152,17 @@ def generate_training_data(root_path, json_path, patch_size_height, patch_size_w
                     for i in neg_patches:
                         list_patches.append(i) # hole negativen Patch
                         list_labels.append(0) # setze Label dieses Patches auf 0
+                    if counter % batch_size == 0:
+                        yield list_patches, list_labels
+                        list_patches = []
+                        list_labels = []
+                        counter = 0
+                    counter += 1
                 else:
                     msg.timemsg('Could not load pixelmap: {}'.format(path_rgb_pixelmap))
             else:
                 msg.timemsg('Could not load image: {}'.format(path_rgb_image))
-
-    return list_patches, list_labels
+    yield list_patches, list_labels
 
 
 
@@ -165,28 +171,29 @@ def train(root_path, json_path, features, patch_size_height, patch_size_width, g
     # Zeitmessung
     start_time = time.time()
 
-
+    counter = 0 
     # generate patches
     msg.timemsg("Generiere Patches start")
-    list_patches, list_labels = generate_training_data(root_path, json_path, patch_size_height, patch_size_width, depth_min, depth_max)
-    msg.timemsg("Generiere Patches fertig")
-
-    msg.timemsg(str(len(list_patches)) + " Patches generiert")
+    for list_patches, list_labels in generate_training_data(root_path, json_path, patch_size_height, 
+                                    patch_size_width, depth_min, depth_max, batch_size=100):
+        
+        msg.timemsg("Batch {}: Generiere Patches fertig".format(counter))
+        msg.timemsg(str(len(list_patches)) + " Patches generiert")
+        # extract features by respective method
+        msg.timemsg("Batch {}: Generate Features start".format(counter))
+        base_path = os.path.split(args.output)[0]
+        path = os.path.join(base_path, get_dumpname(args))
+        path += '.train.batch{}.feat'.format(counter)
+        X_split = get_features(features, list_patches, path, serialize=SERIALIZE_FEATURES)
+        msg.timemsg("Batch {}: Generate Features done")
+        if counter == 0:
+            X = X_split
+        else:
+            X = np.vstack((X, X_split))
+        counter += 1
 
     # init svm
     svm.ini() # SVM initalisieren
-
-    # extract features by respective method
-    msg.timemsg("Generiere Features start")
-    base_path = os.path.split(args.output)[0]
-    path = os.path.join(base_path, get_dumpname(args))
-    path += '.train.feat'
-    X = get_features(features, list_patches, path, serialize=SERIALIZE_FEATURES, chunck_size=CHUNCK_SIZE)
-    # if (features == "hog"): features = hog.features(list_patches, MULTIPLE)
-    # if (features == "cnn"): features = cnn.features(list_patches, MULTIPLE)
-    # if (features == "lbp"): features = lbp.features(list_patches, MULTIPLE)
-    msg.timemsg("Generiere Features fertig")
-
     # train svm
     msg.timemsg("Trainiere SVM start")
     svm.train(np.array(X),np.array(list_labels)) # SVM trainieren
