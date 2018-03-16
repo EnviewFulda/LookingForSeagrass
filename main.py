@@ -119,7 +119,7 @@ def ink_image(image, pixel_map):
 def generate_training_data(root_path, json_path, patch_size_height, patch_size_width, depth_min, depth_max, show=False, batch_size=2000):
     list_patches = []
     list_labels = []
-    counter = 0
+    counter = 1
 
     for i in json.load(open(root_path + "/" + json_path)):
         """
@@ -156,7 +156,6 @@ def generate_training_data(root_path, json_path, patch_size_height, patch_size_w
                         yield list_patches, list_labels
                         list_patches = []
                         list_labels = []
-                        counter = 0
                     counter += 1
                 else:
                     msg.timemsg('Could not load pixelmap: {}'.format(path_rgb_pixelmap))
@@ -172,31 +171,39 @@ def train(root_path, json_path, features, patch_size_height, patch_size_width, g
     start_time = time.time()
 
     counter = 0 
+    labels = []
     # generate patches
     msg.timemsg("Generiere Patches start")
     for list_patches, list_labels in generate_training_data(root_path, json_path, patch_size_height, 
-                                    patch_size_width, depth_min, depth_max, batch_size=100):
+                                    patch_size_width, depth_min, depth_max, batch_size=20):
         
-        msg.timemsg("Batch {}: Generiere Patches fertig".format(counter))
+        msg.timemsg("Batch {}: Patch generation done".format(counter))
         msg.timemsg(str(len(list_patches)) + " Patches generiert")
         # extract features by respective method
         msg.timemsg("Batch {}: Generate Features start".format(counter))
         base_path = os.path.split(args.output)[0]
         path = os.path.join(base_path, get_dumpname(args))
-        path += '.train.batch{}.feat'.format(counter)
-        X_split = get_features(features, list_patches, path, serialize=SERIALIZE_FEATURES)
-        msg.timemsg("Batch {}: Generate Features done")
+        feat_path = path + '.train.batch{}.feat'.format(counter)
+        X_split = get_features(features, list_patches, feat_path, serialize=SERIALIZE_FEATURES)
+        msg.timemsg("Batch {}: Generate Features done".format(counter))
         if counter == 0:
             X = X_split
         else:
             X = np.vstack((X, X_split))
+        labels += list_labels
         counter += 1
+    msg.timemsg('Generated all features!')
 
+    lbl_path = path + '.train.lbls'.format(counter)
+    if os.path.exists(lbl_path):
+        labels = __load(lbl_path)
+    else:
+        __dump(labels, lbl_path)
     # init svm
     svm.ini() # SVM initalisieren
     # train svm
     msg.timemsg("Trainiere SVM start")
-    svm.train(np.array(X),np.array(list_labels)) # SVM trainieren
+    svm.train(np.array(X),np.array(labels)) # SVM trainieren
     msg.timemsg("Trainiere SVM stop")
 
     # Zeitmessung
@@ -265,27 +272,9 @@ def prediction(root_path, json_path, pattern, features, patch_size_height, patch
 
                     if pattern == "SP_CW": # compact watershed
                         patches, segments = superpixel.patches(loaded_picture, "SP_CW", patch_size_height, patch_size_width, height, width) # Patches wurden in Rechtecke umgewandelt, Segmente werden als Koordinaten beschrieben
-                    # if "SP" in pattern:
-                    #     with open(segment_path, "wb") as f:
-                    #         pickle.dump(segments, f)
-
-                # if pattern == "RP": # rectangle pattern
-                #     coordinates = rectangle.create_coordinates_list (patch_size_height, patch_size_width, height, width)
-                #     patches = rectangle.patches(loaded_picture, coordinates, patch_size_height, patch_size_width)
-                #
-                # if pattern == "SP_SLIC": # simple linear iterative clustering
-                #     patches, segments = superpixel.patches(loaded_picture, "SP_SLIC", patch_size_height, patch_size_width, height, width) # Patches wurden in Rechtecke umgewandelt, Segmente werden als Koordinaten beschrieben
-                #
-                # if pattern == "SP_CW": # compact watershed
-                #     patches, segments = superpixel.patches(loaded_picture, "SP_CW", patch_size_height, patch_size_width, height, width) # Patches wurden in Rechtecke umgewandelt, Segmente werden als Koordinaten beschrieben
-
 
                 # feature extraction: LBP, HOG, CNN
-                X = get_features(features, patches, feat_path, serialize=False, chunck_size=CHUNCK_SIZE)
-                # if (args.features == "hog"): features = hog.features(patches, MULTIPLE)
-                # if (args.features == "cnn"): features = cnn.features(patches, MULTIPLE)
-                # if (args.features == "lbp"): features = lbp.features(patches, MULTIPLE)
-
+                X = get_features(features, patches, feat_path, serialize=False)
 
                 # prediction
                 prediction = svm.predict(X, MULTIPLE)
@@ -387,10 +376,10 @@ def get_feat(feature_method, patches):
 
 def __load(path):
     if os.path.exists(path):
-        msg.timemsg("Load feature dump from {}".format(path))
+        msg.timemsg("Load dump from {}".format(path))
         with open( path, "rb" ) as f:
             X = pickle.load(f)
-        msg.timemsg("Load featue dump finished")
+        msg.timemsg("Load dump done")
         return X
     else:
         msg.timemsg('Could not load pickle: {}'.format(path))
@@ -401,10 +390,10 @@ def __dump(X, path):
         msg.timemsg('Will overite file {} with new pickle dump'.format(path))
     else:
         try:
-            msg.timemsg("Dump features to {}".format(path))
+            msg.timemsg("Dump to {}".format(path))
             with open(path, "wb") as f:
                 pickle.dump(X, f, protocol=pickle.HIGHEST_PROTOCOL)
-            msg.timemsg("Feature dump fertig")
+            msg.timemsg("Dump done")
         except:
             msg.timemsg('Exception during dump of {}'.format(path))
             msg.timemsg(traceback.format_exec())
@@ -449,7 +438,7 @@ def get_features(feature_method, patches, path, serialize=True, chunck_size=1000
     #             else:
     #                 X = np.vstack((X, X_split))
     #         start += step
-    return X
+    return np.array(X)
 
         
 
