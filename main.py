@@ -34,7 +34,8 @@ sumarized_prediction_time = 0
 
 SINGLE = 0
 MULTIPLE = 1
-
+SERIALIZE_FEATURES = True
+CHUNCK_SIZE = 100000
 
 dict_input = dict()
 dict_output = dict()
@@ -179,7 +180,7 @@ def train(root_path, json_path, features, patch_size_height, patch_size_width, g
     base_path = os.path.split(args.output)[0]
     path = os.path.join(base_path, get_dumpname(args))
     path += '.train.feat'
-    X = get_features(features, list_patches, path)
+    X = get_features(features, list_patches, path, serialize=SERIALIZE_FEATURES, chunck_size=CHUNCK_SIZE)
     # if (features == "hog"): features = hog.features(list_patches, MULTIPLE)
     # if (features == "cnn"): features = cnn.features(list_patches, MULTIPLE)
     # if (features == "lbp"): features = lbp.features(list_patches, MULTIPLE)
@@ -270,7 +271,7 @@ def prediction(root_path, json_path, pattern, features, patch_size_height, patch
 
 
                 # feature extraction: LBP, HOG, CNN
-                X = get_features(features, patches, feat_path)
+                X = get_features(features, patches, feat_path, serialize=SERIALIZE_FEATURES, chunck_size=CHUNCK_SIZE)
                 # if (args.features == "hog"): features = hog.features(patches, MULTIPLE)
                 # if (args.features == "cnn"): features = cnn.features(patches, MULTIPLE)
                 # if (args.features == "lbp"): features = lbp.features(patches, MULTIPLE)
@@ -365,24 +366,68 @@ def create_output_dict (path):
 
     save_json(path, dict_eval_file)
 
-def get_features(feature_method, patches, path):
-    # if os.path.exists(path):
-    if False:
-        msg.timemsg("Load {} feature dump from {}".format(feature_method, path))
+def get_feat(feature_method, patches):
+    msg.timemsg("Generiere {} Features start".format(feature_method))
+    if (feature_method == "hog"): X = hog.features(patches, MULTIPLE)
+    if (feature_method == "cnn"): X = cnn.features(patches, MULTIPLE)
+    if (feature_method == "lbp"): X = lbp.features(patches, MULTIPLE)
+    msg.timemsg("Generiere Features fertig")
+    return X
+
+def __load(path):
+    if os.path.exists(path):
+        msg.timemsg("Load feature dump from {}".format(path))
         with open( path, "rb" ) as f:
             X = pickle.load(f)
         msg.timemsg("Load featue dump finished")
+        return X
     else:
-        msg.timemsg("Generiere {} Features start".format(feature_method))
-        if (feature_method == "hog"): X = hog.features(patches, MULTIPLE)
-        if (feature_method == "cnn"): X = cnn.features(patches, MULTIPLE)
-        if (feature_method == "lbp"): X = lbp.features(patches, MULTIPLE)
-        msg.timemsg("Generiere Features fertig")
-        # msg.timemsg("Dump features to {}".format(path))
-        # with open(path, "wb") as f:
-        #     pickle.dump(X, f)
-        # msg.timemsg("Feature dump fertig")
+        msg.timemsg('Could not load pickle: {}'.format(path))
+        return None
+
+def __dump(X, path):
+    if os.path.exists(path):
+        msg.timemsg('Will overite file {} with new pickle dump'.format(path))
+    else:
+        msg.timemsg("Dump features to {}".format(path))
+        with open(path, "wb") as f:
+            pickle.dump(X, f, protocol=pickle.HIGHEST_PROTOCOL)
+        msg.timemsg("Feature dump fertig")
+
+
+def get_features(feature_method, patches, path, serialize=True, chunck_size=100000):
+    path_exists = os.path.exists(path)
+    if chunck_size is None:
+        if path_exists:
+            X = __load(path)
+        else:
+            X = get_feat(feature_method, patches)
+            __dump(X, path)
+    else:
+        start = 0
+        step = chunck_size
+        n_feat = len(X)
+        n_iter = n_feat/ chunck_size
+        if n_feat % chunck_size != 0:
+            n_iter += 1
+        for i in range(n_iter):
+            if start+step > n_feat:
+                step = n_feat % chunck_size
+            new_path = path + str(start)
+            if not os.path.exists(path):
+                if i == 0:
+                    X = get_feat(feature_method, patches)
+                __dump(X[start:start+step], path)
+            else:
+                X_split = __load(path)
+                if i == 0:
+                    X = X_split
+                else:
+                    X = np.vstack((X, X_split))
+            start += step
     return X
+
+        
 
 
 
