@@ -1,5 +1,6 @@
 import json
 import cv2
+import traceback
 from sklearn.preprocessing import binarize
 import numpy as np
 
@@ -392,10 +393,14 @@ def __dump(X, path):
     if os.path.exists(path):
         msg.timemsg('Will overite file {} with new pickle dump'.format(path))
     else:
-        msg.timemsg("Dump features to {}".format(path))
-        with open(path, "wb") as f:
-            pickle.dump(X, f, protocol=pickle.HIGHEST_PROTOCOL)
-        msg.timemsg("Feature dump fertig")
+        try:
+            msg.timemsg("Dump features to {}".format(path))
+            with open(path, "wb") as f:
+                pickle.dump(X, f, protocol=pickle.HIGHEST_PROTOCOL)
+            msg.timemsg("Feature dump fertig")
+        except:
+            msg.timemsg('Exception during dump of {}'.format(path))
+            msg.timemsg(traceback.format_exec())
 
 
 def get_features(feature_method, patches, path, serialize=True, chunck_size=100000):
