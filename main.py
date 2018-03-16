@@ -36,8 +36,7 @@ sumarized_prediction_time = 0
 SINGLE = 0
 MULTIPLE = 1
 SERIALIZE_FEATURES = True
-CHUNCK_SIZE = 100000
-
+BATCH_SIZE = 1000
 dict_input = dict()
 dict_output = dict()
 dict_experiment = dict()
@@ -174,11 +173,15 @@ def train(root_path, json_path, features, patch_size_height, patch_size_width, g
     labels = []
     # generate patches
     msg.timemsg("Generiere Patches start")
+    with open(root_path + "/" + json_path) as f:
+        train_list = json.load(f)
+    n_train_samples = len(train_list)
+
     for list_patches, list_labels in generate_training_data(root_path, json_path, patch_size_height, 
-                                    patch_size_width, depth_min, depth_max, batch_size=20):
+                                    patch_size_width, depth_min, depth_max, batch_size=BATCH_SIZE):
         
         msg.timemsg("Batch {}: Patch generation done".format(counter))
-        msg.timemsg(str(len(list_patches)) + " Patches generiert")
+        msg.timemsg(str(len(list_patches)) + "Patches have been generated")
         # extract features by respective method
         msg.timemsg("Batch {}: Generate Features start".format(counter))
         base_path = os.path.split(args.output)[0]
@@ -192,9 +195,10 @@ def train(root_path, json_path, features, patch_size_height, patch_size_width, g
             X = np.vstack((X, X_split))
         labels += list_labels
         counter += 1
+        msg.timemsg('Feature generation progress {}%'.format(float((counter*BATCH_SIZE)/n_train_samples)*100))
     msg.timemsg('Generated all features!')
 
-    lbl_path = path + '.train.lbls'.format(counter)
+    lbl_path = path + '.train.lbls'
     if os.path.exists(lbl_path):
         labels = __load(lbl_path)
     else:
@@ -233,10 +237,8 @@ def prediction(root_path, json_path, pattern, features, patch_size_height, patch
     counter = 1
     for i in test_json:
         if check_depth (i["depth"], depth_min, depth_max):
-
             # Zeitmessung
             start_time = time.time()
-
             path_rgb_image = os.path.join(root_path,i["image"])
             loaded_picture = cv2.imread(path_rgb_image)
             path_rgb_pixelmap = os.path.join(root_path,i["ground-truth"])
@@ -244,68 +246,37 @@ def prediction(root_path, json_path, pattern, features, patch_size_height, patch
             if loaded_picture is not None and loaded_pixelmap is not None:
                 height = loaded_picture.shape[0]
                 width  = loaded_picture.shape[1]
-
                 dumpname = get_dumpname(args)
                 outdir = os.path.join(os.path.split(args.output)[0], dumpname)
-                #if not os.path.exists(outdir):
-                #    os.mkdir(outdir)
                 base_path = os.path.join(outdir, '{}.predict'.format(os.path.basename(path_rgb_image)))
                 feat_path = base_path + '.feat'
                 segment_path = base_path + '.segment'
-                # patches = None
-                # if not os.path.exists(path):
-                # three cases: RP, SP_SLIC, SP_CW
-                # if SP_SLIC or SP_CW -> generate rect patches from superpixel
-
-                # if os.path.exists(segment_path):
-                if False:
-                    with open( segment_path, "rb" ) as f:
-                        segments = pickle.load(f)
-                        patches = None
-                else:
-                    if pattern == "RP": # rectangle pattern
-                        coordinates = rectangle.create_coordinates_list (patch_size_height, patch_size_width, height, width)
-                        patches = rectangle.patches(loaded_picture, coordinates, patch_size_height, patch_size_width)
-
-                    if pattern == "SP_SLIC": # simple linear iterative clustering
-                        patches, segments = superpixel.patches(loaded_picture, "SP_SLIC", patch_size_height, patch_size_width, height, width) # Patches wurden in Rechtecke umgewandelt, Segmente werden als Koordinaten beschrieben
-
-                    if pattern == "SP_CW": # compact watershed
-                        patches, segments = superpixel.patches(loaded_picture, "SP_CW", patch_size_height, patch_size_width, height, width) # Patches wurden in Rechtecke umgewandelt, Segmente werden als Koordinaten beschrieben
-
+                if pattern == "RP": # rectangle pattern
+                    coordinates = rectangle.create_coordinates_list (patch_size_height, patch_size_width, height, width)
+                    patches = rectangle.patches(loaded_picture, coordinates, patch_size_height, patch_size_width)
+                if pattern == "SP_SLIC": # simple linear iterative clustering
+                    patches, segments = superpixel.patches(loaded_picture, "SP_SLIC", patch_size_height, patch_size_width, height, width) # Patches wurden in Rechtecke umgewandelt, Segmente werden als Koordinaten beschrieben
+                if pattern == "SP_CW": # compact watershed
+                    patches, segments = superpixel.patches(loaded_picture, "SP_CW", patch_size_height, patch_size_width, height, width) # Patches wurden in Rechtecke umgewandelt, Segmente werden als Koordinaten beschrieben
                 # feature extraction: LBP, HOG, CNN
                 X = get_features(features, patches, feat_path, serialize=False)
-
                 # prediction
                 prediction = svm.predict(X, MULTIPLE)
-
-
                 # Zeitmessung
                 elapsed_time = (time.time() - start_time) * 1000 # ms
                 global sumarized_prediction_time
                 sumarized_prediction_time += elapsed_time
-
-
-
                 # calculate pixelmaps
                 if pattern == "RP":
                     coordinates = rectangle.create_coordinates_list (patch_size_height, patch_size_width, height, width)
                     classifier_pixel_map = rectangle.logical_pixelmap(prediction, height, width, coordinates, patch_size_height, patch_size_width)
-
                 if pattern == "SP_SLIC" or pattern == "SP_CW":
                     classifier_pixel_map = superpixel.logical_pixelmap(segments, prediction, height, width) # In Segments stecken die Koordinaten jedes Pixels für das Segment
-
-
                 # Evaluation
                 annotated_logical_pixelmap = rgb_pixelmap_to_logical_pixelmap(loaded_pixelmap)
-
                 dict_bundle = evaluate (i["image"], classifier_pixel_map, annotated_logical_pixelmap)
-
                 global list_eval
                 list_eval.append(dict_bundle)
-
-
-
                 # Debug
                 if (args.mode == "debug"):
                     # Anzeigen des Bildes mit eingezeichnetem Seegras
@@ -323,7 +294,6 @@ def prediction(root_path, json_path, pattern, features, patch_size_height, patch
                     msg.timemsg('Could not load image: {}'.format(path_rgb_image))
             msg.timemsg('Prediction Progress: {}%'.format(float(counter/n_test)*100))
             counter += 1
-
 
 
 def evaluate(path, pm_clf, pm_ann):
