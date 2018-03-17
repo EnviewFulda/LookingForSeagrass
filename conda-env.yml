@@ -31,7 +31,7 @@ dependencies:
   - networkx=1.11=py35_0
   - olefile=0.44=py35_0
   - packaging=17.1=py_0
-  - pandas=0.20.1=np111py35_0
+  - pandas
   - partd=0.3.8=py35_0
   - pip=9.0.1=py35_1
   - pixman=0.34.0=0
