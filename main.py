@@ -10,7 +10,6 @@ style.use("ggplot")
 import argparse
 import os
 import pickle
-os.environ["CUDA_VISIBLE_DEVICES"]="1"
 import classifier.dataset
 import classifier.hog as hog
 import classifier.cnn as cnn
@@ -37,7 +36,7 @@ sumarized_prediction_time = 0
 SINGLE = 0
 MULTIPLE = 1
 SERIALIZE_FEATURES = True
-BATCH_SIZE = 2000
+BATCH_SIZE = 1000
 dict_input = dict()
 dict_output = dict()
 dict_experiment = dict()
@@ -53,7 +52,8 @@ def rgb_pixelmap_to_logical_pixelmap (rgb_pixelmap):
     Returns:
 
     '''
-    gray_pixelmap = cv2.cvtColor(rgb_pixelmap, cv2.COLOR_BGR2GRAY) # In Grauwertbild wandeln
+    #gray_pixelmap = cv2.cvtColor(rgb_pixelmap, cv2.COLOR_BGR2GRAY) # In Grauwertbild wandeln
+    gray_pixelmap = rgb_pixelmap
     logical_pixelmap = binarize(gray_pixelmap, threshold=127) # Binarisieren
     return logical_pixelmap
 
