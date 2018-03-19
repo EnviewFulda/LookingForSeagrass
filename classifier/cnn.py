@@ -32,7 +32,7 @@ def features(X, mode):
         features (list)
     '''
     config = tf.ConfigProto()
-    config.gpu_options.allow_growth=True
+#    config.gpu_options.allow_growth=True
     with tf.Session(config=config) as sess:
         # nur einmal ausführen
         next_to_last_tensor = sess.graph.get_tensor_by_name('pool_3:0') # ---------------------------- aus dem pool_3:0 Layer werden die Features herausgeholt
