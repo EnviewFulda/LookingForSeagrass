@@ -36,3 +36,7 @@ def timemsg (msg):
     output = str(hour) +  ":" +  str(minute) +  ":" + str(second) + " " + msg
     print (output)
     logging.info(output)
+
+def debug(msg):
+    print(msg)
+    logging.debug(msg)
