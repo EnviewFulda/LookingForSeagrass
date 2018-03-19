@@ -10,7 +10,6 @@ style.use("ggplot")
 import argparse
 import os
 import pickle
-os.environ["CUDA_VISIBLE_DEVICES"]="1"
 import classifier.dataset
 import classifier.hog as hog
 import classifier.cnn as cnn

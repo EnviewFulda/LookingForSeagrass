@@ -4,6 +4,7 @@
 GRAPH="/home/thomas/cnn_feature_extractor/tf_inception/classify_image_graph_def.pb"
 FOLDER_ROOT="/home/thomas/experiments/dataset"
 
+CUDA_VISIBLE_DEVICES=0
 FOLDER_IMAGES="/images"
 FOLDER_GROUND_TRUTH="/ground-truth"
 EVAL_TRAIN="/train.json"
