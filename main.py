@@ -151,16 +151,16 @@ def generate_training_data(root_path, json_path, patch_size_height, patch_size_w
                     for i in neg_patches:
                         list_patches.append(i) # hole negativen Patch
                         list_labels.append(0) # setze Label dieses Patches auf 0
-                    if counter % batch_size == 0:
-                        yield list_patches, list_labels
-                        list_patches = []
-                        list_labels = []
+                    # if counter % batch_size == 0:
+                    #     yield list_patches, list_labels
+                    #     list_patches = []
+                    #     list_labels = []
                     counter += 1
                 else:
                     msg.timemsg('Could not load pixelmap: {}'.format(path_rgb_pixelmap))
             else:
                 msg.timemsg('Could not load image: {}'.format(path_rgb_image))
-    yield list_patches, list_labels
+    return list_patches, list_labels
 
 
 
@@ -177,25 +177,24 @@ def train(root_path, json_path, features, patch_size_height, patch_size_width, g
         train_list = json.load(f)
     n_train_samples = len(train_list)
 
-    for list_patches, list_labels in generate_training_data(root_path, json_path, patch_size_height, 
-                                    patch_size_width, depth_min, depth_max, batch_size=BATCH_SIZE):
-        
-        msg.timemsg("Batch {}: Patch generation done".format(counter))
-        msg.timemsg(str(len(list_patches)) + "Patches have been generated")
-        # extract features by respective method
-        msg.timemsg("Batch {}: Generate Features start".format(counter))
-        base_path = os.path.split(args.output)[0]
-        path = os.path.join(base_path, get_dumpname(args))
-        feat_path = path + '.train.batch{}.feat'.format(counter)
-        X_split = get_features(features, list_patches, feat_path, serialize=SERIALIZE_FEATURES)
-        msg.timemsg("Batch {}: Generate Features done".format(counter))
-        if counter == 0:
-            X = X_split
-        else:
-            X = np.vstack((X, X_split))
-        labels += list_labels
-        counter += 1
-        msg.timemsg('Feature generation progress {}%'.format(float((counter*BATCH_SIZE)/n_train_samples)*100))
+    list_patches, list_labels = generate_training_data(root_path, json_path, patch_size_height, 
+                                    patch_size_width, depth_min, depth_max, batch_size=BATCH_SIZE)
+    msg.timemsg("Batch {}: Patch generation done".format(counter))
+    msg.timemsg(str(len(list_patches)) + "Patches have been generated")
+    # extract features by respective method
+    msg.timemsg("Batch {}: Generate Features start".format(counter))
+    base_path = os.path.split(args.output)[0]
+    path = os.path.join(base_path, get_dumpname(args))
+    feat_path = path + '.train.batch{}.feat'.format(counter)
+    X_split = get_features(features, list_patches, feat_path, serialize=SERIALIZE_FEATURES)
+    msg.timemsg("Batch {}: Generate Features done".format(counter))
+    if counter == 0:
+        X = X_split
+    else:
+        X = np.vstack((X, X_split))
+    labels += list_labels
+    counter += 1
+    # msg.timemsg('Feature generation progress {}%'.format(float((counter*BATCH_SIZE)/n_train_samples)*100))
     msg.timemsg('Generated all features!')
 
     lbl_path = path + '.train.lbls'
