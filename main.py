@@ -135,7 +135,10 @@ def generate_training_data(root_path, json_path, patch_size_height, patch_size_w
             path_rgb_image = os.path.join(root_path,i["image"])
 
             print('Read image: {}'.format(path_rgb_image))
-            rgb_image = imread(path_rgb_image)
+            try:
+                rgb_image = imread(path_rgb_image)
+            except:
+                msg.timemsg('Could not load image: {}'.format(path_rgb_image))
             if rgb_image is not None:
                 if show:
                     cv2.imshow(" ", rgb_image)
@@ -143,7 +146,10 @@ def generate_training_data(root_path, json_path, patch_size_height, patch_size_w
 
                 path_rgb_pixelmap = os.path.join(root_path,i["ground-truth"])
                 print('Read pixelmap: {}'.format(path_rgb_pixelmap))
-                rgb_pixelmap = imread(path_rgb_pixelmap)
+                try:
+                    rgb_pixelmap = imread(path_rgb_pixelmap)
+                except:
+                    msg.timemsg('Could not load pixelmap: {}'.format(path_rgb_pixelmap))
                 if rgb_pixelmap is not None:
                     pos_patches, neg_patches = generate_patches (rgb_image, rgb_pixelmap, patch_size_height, patch_size_width)
                     # gehe in die Listen rein
@@ -242,9 +248,15 @@ def prediction(root_path, json_path, pattern, features, patch_size_height, patch
             # Zeitmessung
             start_time = time.time()
             path_rgb_image = os.path.join(root_path,i["image"])
-            loaded_picture = imread(path_rgb_image)
+            try:
+                loaded_picture = imread(path_rgb_image)
+            except:
+                msg.timemsg('Could not load image: {}'.format(path_rgb_image))
             path_rgb_pixelmap = os.path.join(root_path,i["ground-truth"])
-            loaded_pixelmap = imread(path_rgb_pixelmap)
+            try:
+                loaded_pixelmap = imread(path_rgb_pixelmap)
+            except:
+                msg.timemsg('Could not load pixelmap: {}'.format(path_rgb_pixelmap))
             if loaded_picture is not None and loaded_pixelmap is not None:
                 height = loaded_picture.shape[0]
                 width  = loaded_picture.shape[1]
