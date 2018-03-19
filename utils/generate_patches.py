@@ -107,8 +107,8 @@ def left_center_grid_search (img, patch_height, patch_width):
 
 
 def generate_patches (rgb_image, rgb_pixelmap, patch_height, patch_width):
-    gray_pixelmap = cv2.cvtColor(rgb_pixelmap, cv2.COLOR_BGR2GRAY) # In Grauwertbild wandeln
-    logical_pixelmap = binarize(gray_pixelmap, threshold=127) # Binarisieren
+    #gray_pixelmap = cv2.cvtColor(rgb_pixelmap, cv2.COLOR_BGR2GRAY) # In Grauwertbild wandeln
+    logical_pixelmap = binarize(rgb_pixelmap, threshold=127) # Binarisieren
 
     pos_patches_koor, neg_patches_koor = left_center_grid_search(logical_pixelmap, patch_height, patch_width) # Get positve/negative patches coordinates from patches search algorithm
 
