@@ -39,10 +39,13 @@ def features(X, mode):
 
         if (mode == MULTIPLE): # Mehrere Features
             listFeatures = []
-            for Patch in X:
+            len_x = len(X)
+            for i, Patch in enumerate(X):
                 feat = sess.run(next_to_last_tensor,{'DecodeJpeg:0': Patch})
                 feat = np.squeeze(np.array(feat)) # In array überführen, # Eine Dimension zuviel, diese entfernen
                 listFeatures.append(feat)
+                if i % 200:
+                    print('CNN features progress: {}%'.format(float(i/len_x)*100))
             return listFeatures
 
         if (mode == SINGLE): # Nur ein Feature
