@@ -354,7 +354,7 @@ def create_output_dict (path):
 def get_feat(feature_method, patches):
     msg.timemsg("Generiere {} Features start".format(feature_method))
     if (feature_method == "hog"): X = hog.features(patches, MULTIPLE)
-    if (feature_method == "cnn"): X = cnn.features(patches, MULTIPLE)
+    if (feature_method == "cnn"): X = cnn.cnn_instance.features(patches, MULTIPLE)
     if (feature_method == "lbp"): X = lbp.features(patches, MULTIPLE)
     msg.timemsg("Generiere Features fertig")
     return X
@@ -486,6 +486,7 @@ if __name__ == '__main__':
     dict_experiment["prediction"] = sumarized_prediction_time
     msg.timemsg("Prediction abgeschlossen")
 
+    if (args.features == "cnn"): cnn.close()
 
     # Output Json erzeugen
     create_output_dict(args.output)
