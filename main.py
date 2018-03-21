@@ -185,42 +185,46 @@ def train(root_path, json_path, features, patch_size_height, patch_size_width, g
         train_list = json.load(f)
     n_train_samples = len(train_list)
 
-    for list_patches, list_labels in generate_training_data(root_path, json_path, patch_size_height, 
-                                    patch_size_width, depth_min, depth_max, batch_size=BATCH_SIZE):
-        msg.timemsg("Batch {}: Patch generation done".format(counter))
-        msg.timemsg(str(len(list_patches)) + "Patches have been generated")
-        # extract features by respective method
-        msg.timemsg("Batch {}: Generate Features start".format(counter))
-        base_path = os.path.split(args.output)[0]
-        path = os.path.join(base_path, get_dumpname(args))
-        feat_path = path + '.train.batch{}.feat'.format(counter)
-        X_split = get_features(features, list_patches, feat_path, serialize=SERIALIZE_FEATURES)
-        msg.timemsg("Batch {}: Generate Features done".format(counter))
-        if counter == 0:
-            X = X_split
-        else:
-            X = np.vstack((X, X_split))
-        labels += list_labels
-        counter += 1
-    # msg.timemsg('Feature generation progress {}%'.format(float((counter*BATCH_SIZE)/n_train_samples)*100))
-    msg.timemsg('Generated all features!')
-
-    lbl_path = path + '.train.lbls'
-    if os.path.exists(lbl_path):
-        labels = __load(lbl_path)
+    base_path = os.path.split(args.output)[0]
+    path = os.path.join(base_path, get_dumpname(args))
+    clf_path = path + '.clf'
+    if not os.path.exists(clf_path):
+        svm.ini(path=clf_path)
     else:
-        __dump(labels, lbl_path)
-    # init svm
-    svm.ini() # SVM initalisieren
-    # train svm
-    msg.timemsg("Trainiere SVM start")
-    svm.train(np.array(X),np.array(labels)) # SVM trainieren
-    msg.timemsg("Trainiere SVM stop")
+        for list_patches, list_labels in generate_training_data(root_path, json_path, patch_size_height, 
+                                        patch_size_width, depth_min, depth_max, batch_size=BATCH_SIZE):
+            msg.timemsg("Batch {}: Patch generation done".format(counter))
+            msg.timemsg(str(len(list_patches)) + "Patches have been generated")
+            # extract features by respective method
+            msg.timemsg("Batch {}: Generate Features start".format(counter))
+            feat_path = path + '.train.batch{}.feat'.format(counter)
+            X_split = get_features(features, list_patches, feat_path, serialize=SERIALIZE_FEATURES)
+            msg.timemsg("Batch {}: Generate Features done".format(counter))
+            if counter == 0:
+                X = X_split
+            else:
+                X = np.vstack((X, X_split))
+            labels += list_labels
+            counter += 1
+        # msg.timemsg('Feature generation progress {}%'.format(float((counter*BATCH_SIZE)/n_train_samples)*100))
+        msg.timemsg('Generated all features!')
 
-    # Zeitmessung
-    elapsed_time = (time.time() - start_time) * 1000 # ms
-    global training_time
-    training_time = elapsed_time
+        lbl_path = path + '.train.lbls'
+        if os.path.exists(lbl_path):
+            labels = __load(lbl_path)
+        else:
+            __dump(labels, lbl_path)
+        # init svm
+        svm.ini() # SVM initalisieren
+        # train svm
+        msg.timemsg("Trainiere SVM start")
+        svm.train(np.array(X),np.array(labels), path=clf_path) # SVM trainieren
+        msg.timemsg("Trainiere SVM stop")
+
+        # Zeitmessung
+        elapsed_time = (time.time() - start_time) * 1000 # ms
+        global training_time
+        training_time = elapsed_time
 
 
 

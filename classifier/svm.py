@@ -5,12 +5,13 @@ from sklearn.externals import joblib
 from sklearn import linear_model
 
 import classifier.msg as msg
+import os
 
 SINGLE = 0
 MULTIPLE = 1
 
 
-def ini():
+def ini(path=None):
     '''Initialisierung
 
     Args:
@@ -20,12 +21,18 @@ def ini():
 
     '''
     global clf
-    #clf = svm.SVC(kernel='linear', C = 1.0) # SVM
     clf = linear_model.LogisticRegression() #LR
+    if path is not None:
+        if os.path.exists(path):
+            clf = joblib.load(path)
+            msg.timemsg('Loaded classifier from: {}'.format(path))
+        else:
+            msg.timemsg('Path to classifier does not exist: {}'.format(path))
+    #clf = svm.SVC(kernel='linear', C = 1.0) # SVM
 
 
 
-def train(features, labels):
+def train(features, labels, path='clf.pkl'):
     '''Klassifizierer trainieren
 
     Args:
@@ -38,6 +45,11 @@ def train(features, labels):
     global clf
     msg.timemsg("train_shape: {}".format(features.shape))
     clf.fit(features, labels)
+    try:
+        joblib.dump(clf, path)
+        msg.timemsg('Dumped classifier')
+    except:
+        msg.timemsg('Failed to dump classifier!')
 
 
 
