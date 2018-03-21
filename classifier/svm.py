@@ -21,7 +21,7 @@ def ini(path=None):
 
     '''
     global clf
-    clf = linear_model.LogisticRegression() #LR
+    clf = linear_model.LogisticRegression(class_weight='balanced') #LR
     if path is not None:
         if os.path.exists(path):
             clf = joblib.load(path)
