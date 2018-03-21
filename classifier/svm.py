@@ -44,7 +44,9 @@ def train(features, labels, path='clf.pkl'):
     '''
     global clf
     msg.timemsg("train_shape: {}".format(features.shape))
+    msg.timemsg('Start training')
     clf.fit(features, labels)
+    msg.timemsg('Finished training')
     try:
         joblib.dump(clf, path)
         msg.timemsg('Dumped classifier')
