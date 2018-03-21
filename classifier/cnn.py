@@ -24,7 +24,7 @@ class CnnFeat(object):
                 feat = self.sess.run(next_to_last_tensor,{'DecodeJpeg:0': Patch})
                 feat = np.squeeze(np.array(feat)) # In array überführen, # Eine Dimension zuviel, diese entfernen
                 listFeatures.append(feat)
-                if i % 1000 == 0:
+                if i % 500 == 0:
                     print('CNN features progress: {}%'.format(float(i/len_x)*100))
             return listFeatures
 
@@ -78,7 +78,7 @@ def features(X, mode):
                 feat = sess.run(next_to_last_tensor,{'DecodeJpeg:0': Patch})
                 feat = np.squeeze(np.array(feat)) # In array überführen, # Eine Dimension zuviel, diese entfernen
                 listFeatures.append(feat)
-                if i % 1000 == 0:
+                if i % 500 == 0:
                     print('CNN features progress: {}%'.format(float(i/len_x)*100))
             return listFeatures
 
