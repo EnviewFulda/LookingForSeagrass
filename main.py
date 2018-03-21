@@ -188,7 +188,7 @@ def train(root_path, json_path, features, patch_size_height, patch_size_width, g
     base_path = os.path.split(args.output)[0]
     path = os.path.join(base_path, get_dumpname(args))
     clf_path = path + '.clf'
-    if not os.path.exists(clf_path):
+    if os.path.exists(clf_path):
         svm.ini(path=clf_path)
     else:
         for list_patches, list_labels in generate_training_data(root_path, json_path, patch_size_height, 
