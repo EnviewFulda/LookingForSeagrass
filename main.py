@@ -300,8 +300,9 @@ def prediction(root_path, json_path, pattern, features, patch_size_height, patch
                         cv2.imshow(" ", picture)
                         cv2.waitKey(0)
                     if write:
-                        debug_base_path, debug_img_name = os.path.split(args.output)
-                        debug_out_path = os.path.join(debug_base_path, dumpname + '.debug.' + debug_img_name )
+                        debug_base_path = os.path.split(args.output)[0]
+                        debug_img_name = os.path.basename(path_rgb_image)
+                        debug_out_path = os.path.join(debug_base_path, dumpname + debug_img_name )
                         cv2.imwrite(debug_out_path, picture)
             else:
                 if loaded_pixelmap is None:
@@ -433,9 +434,9 @@ def get_features(feature_method, patches, path, serialize=True, chunck_size=1000
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument("--pattern", help="RP, SP_SLIC, SP_CW")
-    parser.add_argument("--features", help="hoc, lbp, cnn")
+    parser.add_argument("--features", help="hog, lbp, cnn")
     parser.add_argument("--graph", help="/path/to/classify_image_graph_def.pb")
-    parser.add_argument("--mode", help="preview, eval")
+    parser.add_argument("--mode", help="debug, dontcare")
 
     parser.add_argument("--folder_root", help="")
     parser.add_argument("--folder_images", help="")
