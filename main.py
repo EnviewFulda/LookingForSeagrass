@@ -266,10 +266,6 @@ def prediction(root_path, json_path, pattern, features, patch_size_height, patch
                 height = loaded_picture.shape[0]
                 width  = loaded_picture.shape[1]
                 dumpname = get_dumpname(args)
-                outdir = os.path.join(os.path.split(args.output)[0], dumpname)
-                base_path = os.path.join(outdir, '{}.predict'.format(os.path.basename(path_rgb_image)))
-                feat_path = base_path + '.feat'
-                segment_path = base_path + '.segment'
                 if pattern == "RP": # rectangle pattern
                     coordinates = rectangle.create_coordinates_list (patch_size_height, patch_size_width, height, width)
                     patches = rectangle.patches(loaded_picture, coordinates, patch_size_height, patch_size_width)
@@ -278,7 +274,7 @@ def prediction(root_path, json_path, pattern, features, patch_size_height, patch
                 if pattern == "SP_CW": # compact watershed
                     patches, segments = superpixel.patches(loaded_picture, "SP_CW", patch_size_height, patch_size_width, height, width) # Patches wurden in Rechtecke umgewandelt, Segmente werden als Koordinaten beschrieben
                 # feature extraction: LBP, HOG, CNN
-                X = get_features(features, patches, feat_path, serialize=False)
+                X = get_features(features, patches, '', serialize=False)
                 # prediction
                 prediction = svm.predict(X, MULTIPLE)
                 # Zeitmessung
@@ -304,8 +300,9 @@ def prediction(root_path, json_path, pattern, features, patch_size_height, patch
                         cv2.imshow(" ", picture)
                         cv2.waitKey(0)
                     if write:
-                        cv2.imwrite('debug_inked_image.jpg', picture)
-                        input('See written images at: {}'.format(os.getcwd()))
+                        debug_base_path, debug_img_name = os.path.split(args.output)
+                        debug_out_path = os.path.join(debug_base_path, dumpname + '.debug.' + debug_img_name )
+                        cv2.imwrite(debug_out_path, picture)
             else:
                 if loaded_pixelmap is None:
                     msg.timemsg('Could not load pixelmap: {}'.format(path_rgb_pixelmap))
