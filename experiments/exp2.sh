@@ -12,7 +12,7 @@ EVAL_VALIDATE="/validate.json"
 DEPTH_MIN=0.0
 DEPTH_MAX=2.0
 
-MAIN_PROGRAM="LookingForSeagrass/main.py"
+MAIN_PROGRAM="../main.py"
 
 PATCH_SIZE=240
 python3 $MAIN_PROGRAM \

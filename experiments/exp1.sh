@@ -13,7 +13,7 @@ DEPTH_MIN=0.0
 DEPTH_MAX=10.0
 PATCH_SIZE=240
 
-MAIN_PROGRAM="LookingForSeagrass/main.py"
+MAIN_PROGRAM="../main.py"
 
 python3 $MAIN_PROGRAM \
 --pattern SP_SLIC \
