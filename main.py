@@ -303,7 +303,7 @@ def prediction(root_path, json_path, pattern, features, patch_size_height, patch
                         debug_base_path = os.path.split(args.output)[0]
                         debug_img_name = os.path.basename(path_rgb_image)
                         debug_out_path = os.path.join(debug_base_path, dumpname + debug_img_name )
-                        cv2.imwrite(debug_out_path, picture)
+                        cv2.imwrite(debug_out_path, cv2.cvtColor(picture, cv2.COLOR_RGB2BGR))
             else:
                 if loaded_pixelmap is None:
                     msg.timemsg('Could not load pixelmap: {}'.format(path_rgb_pixelmap))
