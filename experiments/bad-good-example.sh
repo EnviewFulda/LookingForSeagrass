@@ -19,7 +19,7 @@ python3 $MAIN_PROGRAM \
 --pattern SP_SLIC \
 --features cnn \
 --graph $GRAPH \
---mode dontcare \
+--mode "debug" \
 --folder_root $FOLDER_ROOT \
 --folder_images $FOLDER_IMAGES \
 --folder_ground_truth $FOLDER_GROUND_TRUTH \
@@ -36,7 +36,7 @@ python3 $MAIN_PROGRAM \
 --pattern RP \
 --features cnn \
 --graph $GRAPH \
---mode dontcare \
+--mode "debug" \
 --folder_root $FOLDER_ROOT \
 --folder_images $FOLDER_IMAGES \
 --folder_ground_truth $FOLDER_GROUND_TRUTH \
@@ -53,7 +53,7 @@ python3 $MAIN_PROGRAM \
 --pattern SP_CW \
 --features cnn \
 --graph $GRAPH \
---mode dontcare \
+--mode "debug" \
 --folder_root $FOLDER_ROOT \
 --folder_images $FOLDER_IMAGES \
 --folder_ground_truth $FOLDER_GROUND_TRUTH \
