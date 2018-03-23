@@ -1,2 +1,6 @@
 __pycache__
 activate-env.sh
+experiments/results/*.json
+experiments/results/*.jpg
+experiments/results/*.log
+experiments/results/*.feat
