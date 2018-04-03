@@ -17,7 +17,7 @@ This project is a joint work between *University of Zadar - Croatia* and *Univer
 
 ### Paper
 
-The full paper **Looking for Seagrass: Deep Learning for Visual Coverage Estimation (accepted for publication@IEEE - OCEANS 2018 Kobe)** is available at: *Coming Soon*
+The full paper **Looking for Seagrass: Deep Learning for Visual Coverage Estimation (accepted for publication@IEEE - OCEANS 2018 Kobe)** is available at: [HS Fulda](https://www.hs-fulda.de/fileadmin/user_upload/FB_ET/Projekte_Forschung/Enview_Jaeger/EnView_News_2018-04/Conference_Kobe_2018_Seagrass.pdf)
 
 ## Dataset
 
