@@ -154,7 +154,6 @@ def generate_training_data(root_path, json_path, patch_size_height, patch_size_w
     yield list_patches, list_labels
 
 
-
 def train(root_path, json_path, features, patch_size_height, patch_size_width, graph, depth_min, depth_max, args):
 
     # Zeitmessung
@@ -206,7 +205,6 @@ def train(root_path, json_path, features, patch_size_height, patch_size_width, g
         elapsed_time = (time.time() - start_time) * 1000 # ms
         global training_time
         training_time = elapsed_time
-
 
 def check_depth (depth, depth_min, depth_max):
     if depth >= depth_min and depth < depth_max:
@@ -290,7 +288,6 @@ def prediction(root_path, json_path, pattern, features, patch_size_height, patch
             msg.timemsg('Prediction Progress: {}%'.format(float(counter/n_test)*100))
             counter += 1
 
-
 def evaluate(path, pm_clf, pm_ann):
 
     # eval pixel map + prediction pixel map
@@ -305,7 +302,6 @@ def evaluate(path, pm_clf, pm_ann):
 
     return dict_bundle
 
-
 def save_json(path, list):
     if len(list): 
         your_json = json.dumps(list)
@@ -314,7 +310,6 @@ def save_json(path, list):
         file = open(path,"w")
         file.write(a)
         file.close()
-
 
 def create_output_dict (path):
 
@@ -360,7 +355,6 @@ def __dump(X, path):
             msg.timemsg('Exception during dump of {}'.format(path))
             msg.timemsg(traceback.format_exec())
 
-
 def get_features(feature_method, patches, path, serialize=True, chunck_size=100000):
     if serialize:
         if os.path.exists(path):
@@ -372,7 +366,6 @@ def get_features(feature_method, patches, path, serialize=True, chunck_size=1000
         X = get_feat(feature_method, patches)
 
     return np.array(X)
-
         
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
@@ -415,8 +408,6 @@ if __name__ == '__main__':
     dict_experiment["training"] = training_time
     msg.timemsg("Training finished")
 
-
-
     msg.timemsg("Prediction started")
     prediction(args.folder_root, args.eval_test, args.pattern, args.features, int(args.patch_size_height), int(args.patch_size_width), float(args.depth_min), float(args.depth_max), args)
     dict_experiment["prediction"] = sumarized_prediction_time
@@ -424,6 +415,6 @@ if __name__ == '__main__':
 
     if (args.features == "cnn"): cnn.close()
 
-    # Output Json erzeugen
+    # generate json output
     create_output_dict(args.output)
     msg.timemsg("generated eval json")
