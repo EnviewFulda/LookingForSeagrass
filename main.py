@@ -17,7 +17,7 @@ import classifier.lbp as lbp
 import classifier.rectangle as rectangle
 import classifier.cal as cal
 import classifier.msg as msg
-import classifier.svm as svm
+import classifier.lr as lr
 import classifier.csvfile as csvfile
 import classifier.superpixel as superpixel
 import classifier.eval_segm as eval_segm
@@ -45,20 +45,19 @@ list_eval = []
 
 
 def rgb_pixelmap_to_logical_pixelmap (rgb_pixelmap):
-    ''' Bild in Logische Pixelmap umwandeln
+    ''' Turn image into logical binary pixel map.
 
     Args:
 
     Returns:
 
     '''
-    #gray_pixelmap = cv2.cvtColor(rgb_pixelmap, cv2.COLOR_BGR2GRAY) # In Grauwertbild wandeln
     gray_pixelmap = rgb_pixelmap
     logical_pixelmap = binarize(gray_pixelmap, threshold=127) # Binarisieren
     return logical_pixelmap
 
 def pixelmap_to_image (pixel_map):
-    '''Logische Pixelmap in Bild umwandeln
+    '''transform binary pixel map to image (rgb)
 
     Args:
 
@@ -66,18 +65,18 @@ def pixelmap_to_image (pixel_map):
 
     '''
 
-    return 255 - (pixel_map * 255) # Pixelmap: 1=Seegras, 0=kein Seegras. Bild: 0=Seegras=Schwarz, 255=kein Seegras=Weiß
+    return 255 - (pixel_map * 255) # Pixelmap: 1=seagrass, 0=background. image: 0=seagrass=black, 255=background=white
 
 def ink_image(image, pixel_map):
-    '''Initialisierung
+    '''
 
     Args:
-        picture: Bild, worauf die Boxen gezeichnet werden
-        pixel_map: Seegras/Kein Seegras
+        picture: image to be colored
+        pixel_map: seagrass / background
 
 
     Returns:
-        picture: Bild mit eingezeichneten Seegras
+        picture: image with colored regions of seagrass
 
     '''
 
@@ -88,11 +87,11 @@ def ink_image(image, pixel_map):
     return_image = image.copy()
 
 
-    # Grünes Bild erstellen
+    # create green image
     cv2.rectangle(green_image,(0,0),(1920,1080),(0,255,0),-1)
 
-    # Originalbild mit Grün überlagern
-    cv2.addWeighted(green_image, alpha, original_image, 1 - alpha, 0, transparent_image) # Transparenz
+    # overlay original image with green image
+    cv2.addWeighted(green_image, alpha, original_image, 1 - alpha, 0, transparent_image) 
 
 
     image = np.array(image)
@@ -100,20 +99,12 @@ def ink_image(image, pixel_map):
     height = image.shape[0]
     width  = image.shape[1]
 
-    pm_height = pixel_map.shape[0]
-    pm_width  = pixel_map.shape[1]
-
-    #print("Bild", height,width)
-    #print("PM", pm_height,pm_width)
-
     for h in range (height):
         for w in range (width):
-            if pixel_map[h][w] == 0: # 0 = Schwarz = Seegras
+            if pixel_map[h][w] == 0: # 0=black=seagrass
                 return_image[h][w] = transparent_image[h][w]
 
     return return_image
-
-
 
 
 def generate_training_data(root_path, json_path, patch_size_height, patch_size_width, depth_min, depth_max, show=False, batch_size=2000):
@@ -122,14 +113,6 @@ def generate_training_data(root_path, json_path, patch_size_height, patch_size_w
     counter = 1
 
     for i in json.load(open(root_path + "/" + json_path)):
-        """
-        print(i["coverage"])
-        print(i["depth"])
-        print(i["ground-truth"])
-        print(i["image"])
-        print("---")
-        """
-
         if check_depth (i["depth"], depth_min, depth_max):
 
             path_rgb_image = os.path.join(root_path,i["image"])
@@ -153,12 +136,12 @@ def generate_training_data(root_path, json_path, patch_size_height, patch_size_w
                     pos_patches, neg_patches = generate_patches (rgb_image, rgb_pixelmap, patch_size_height, patch_size_width)
                     # gehe in die Listen rein
                     for i in pos_patches:
-                        list_patches.append(i) # hole positiven Patch
-                        list_labels.append(1) # setze Label dieses Patches auf 1
+                        list_patches.append(i) # get positive patch
+                        list_labels.append(1) # set label of this patch to one
 
                     for i in neg_patches:
-                        list_patches.append(i) # hole negativen Patch
-                        list_labels.append(0) # setze Label dieses Patches auf 0
+                        list_patches.append(i) # get negative patch
+                        list_labels.append(0) # set label of this patch to zero
                     if counter % batch_size == 0:
                         yield list_patches, list_labels
                         list_patches = []
@@ -180,33 +163,31 @@ def train(root_path, json_path, features, patch_size_height, patch_size_width, g
     counter = 0 
     labels = []
     # generate patches
-    msg.timemsg("Generiere Patches start")
+    msg.timemsg("Generate patches start")
     with open(root_path + "/" + json_path) as f:
         train_list = json.load(f)
-    n_train_samples = len(train_list)
 
     base_path = os.path.split(args.output)[0]
     path = os.path.join(base_path, get_dumpname(args))
     clf_path = path + '.clf'
     if os.path.exists(clf_path):
-        svm.ini(path=clf_path)
+        lr.ini(path=clf_path)
     else:
         for list_patches, list_labels in generate_training_data(root_path, json_path, patch_size_height, 
                                         patch_size_width, depth_min, depth_max, batch_size=BATCH_SIZE):
             msg.timemsg("Batch {}: Patch generation done".format(counter))
             msg.timemsg(str(len(list_patches)) + "Patches have been generated")
             # extract features by respective method
-            msg.timemsg("Batch {}: Generate Features start".format(counter))
+            msg.timemsg("Batch {}: Generate features start".format(counter))
             feat_path = path + '.train.batch{}.feat'.format(counter)
             X_split = get_features(features, list_patches, feat_path, serialize=SERIALIZE_FEATURES)
-            msg.timemsg("Batch {}: Generate Features done".format(counter))
+            msg.timemsg("Batch {}: Generate features done".format(counter))
             if counter == 0:
                 X = X_split
             else:
                 X = np.vstack((X, X_split))
             labels += list_labels
             counter += 1
-        # msg.timemsg('Feature generation progress {}%'.format(float((counter*BATCH_SIZE)/n_train_samples)*100))
         msg.timemsg('Generated all features!')
 
         lbl_path = path + '.train.lbls'
@@ -214,20 +195,17 @@ def train(root_path, json_path, features, patch_size_height, patch_size_width, g
             labels = __load(lbl_path)
         else:
             __dump(labels, lbl_path)
-        # init svm
-        svm.ini() # SVM initalisieren
-        # train svm
-        msg.timemsg("Trainiere SVM start")
-        svm.train(np.array(X),np.array(labels), path=clf_path) # SVM trainieren
-        msg.timemsg("Trainiere SVM stop")
+        # init lr
+        lr.ini() 
+        # train lr
+        msg.timemsg("Training Classifier start")
+        lr.train(np.array(X),np.array(labels), path=clf_path) 
+        msg.timemsg("Training Classifier end")
 
-        # Zeitmessung
+        # time measurement
         elapsed_time = (time.time() - start_time) * 1000 # ms
         global training_time
         training_time = elapsed_time
-
-
-
 
 
 def check_depth (depth, depth_min, depth_max):
@@ -276,8 +254,8 @@ def prediction(root_path, json_path, pattern, features, patch_size_height, patch
                 # feature extraction: LBP, HOG, CNN
                 X = get_features(features, patches, '', serialize=False)
                 # prediction
-                prediction = svm.predict(X, MULTIPLE)
-                # Zeitmessung
+                prediction = lr.predict(X, MULTIPLE)
+                # time measurement
                 elapsed_time = (time.time() - start_time) * 1000 # ms
                 global sumarized_prediction_time
                 sumarized_prediction_time += elapsed_time
@@ -287,14 +265,14 @@ def prediction(root_path, json_path, pattern, features, patch_size_height, patch
                     classifier_pixel_map = rectangle.logical_pixelmap(prediction, height, width, coordinates, patch_size_height, patch_size_width)
                 if pattern == "SP_SLIC" or pattern == "SP_CW":
                     classifier_pixel_map = superpixel.logical_pixelmap(segments, prediction, height, width) # In Segments stecken die Koordinaten jedes Pixels für das Segment
-                # Evaluation
+                # evaluation
                 annotated_logical_pixelmap = rgb_pixelmap_to_logical_pixelmap(loaded_pixelmap)
                 dict_bundle = evaluate (i["image"], classifier_pixel_map, annotated_logical_pixelmap)
                 global list_eval
                 list_eval.append(dict_bundle)
-                # Debug
+                # debug
                 if (args.mode == "debug"):
-                    # Anzeigen des Bildes mit eingezeichnetem Seegras
+                    # show colored picture
                     picture = ink_image(loaded_picture, classifier_pixel_map)
                     if show:
                         cv2.imshow(" ", picture)
@@ -329,7 +307,7 @@ def evaluate(path, pm_clf, pm_ann):
 
 
 def save_json(path, list):
-    if len(list): # Wenn Liste nicht leer ist
+    if len(list): 
         your_json = json.dumps(list)
         parsed = json.loads(your_json)
         a = json.dumps(parsed, indent=4, sort_keys=True)
@@ -347,9 +325,6 @@ def create_output_dict (path):
 
     dict_eval_file["Input"] = dict_input
     dict_eval_file["Output"] = dict_output
-
-
-
 
     save_json(path, dict_eval_file)
 
@@ -396,41 +371,9 @@ def get_features(feature_method, patches, path, serialize=True, chunck_size=1000
     else:
         X = get_feat(feature_method, patches)
 
-    # path_exists = os.path.exists(path)
-    # if chunck_size is None:
-    #     if path_exists:
-    #         X = __load(path)
-    #     else:
-    #         X = get_feat(feature_method, patches)
-    #         __dump(X, path)
-    # else:
-    #     start = 0
-    #     step = chunck_size
-    #     n_feat = len(X)
-    #     n_iter = n_feat/ chunck_size
-    #     if n_feat % chunck_size != 0:
-    #         n_iter += 1
-    #     for i in range(n_iter):
-    #         if start+step > n_feat:
-    #             step = n_feat % chunck_size
-    #         new_path = path + str(start)
-    #         if not os.path.exists(path):
-    #             if i == 0:
-    #                 X = get_feat(feature_method, patches)
-    #             __dump(X[start:start+step], path)
-    #         else:
-    #             X_split = __load(path)
-    #             if i == 0:
-    #                 X = X_split
-    #             else:
-    #                 X = np.vstack((X, X_split))
-    #         start += step
     return np.array(X)
 
         
-
-
-
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument("--pattern", help="RP, SP_SLIC, SP_CW")
@@ -455,15 +398,6 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
-    """
-    train()
-    for x in test.json:
-        predict()
-        result.append(evaluate())
-
-    return result
-    """
-
     dict_input["depth_min"] = args.depth_min
     dict_input["depth_max"] = args.depth_max
     dict_input["patch_size_width"] = args.patch_size_width
@@ -476,20 +410,20 @@ if __name__ == '__main__':
     if (args.features == "hog"): hog.ini()
     if (args.features == "cnn"): cnn.ini(args.graph)
     if (args.features == "lbp"): lbp.ini()
-    msg.timemsg("Training gestartet")
+    msg.timemsg("Training started")
     train(args.folder_root, args.eval_train, args.features, int(args.patch_size_height), int(args.patch_size_width), args.graph, float(args.depth_min), float(args.depth_max), args)
     dict_experiment["training"] = training_time
-    msg.timemsg("Training abgeschlossen")
+    msg.timemsg("Training finished")
 
 
 
-    msg.timemsg("Prediction gestartet")
+    msg.timemsg("Prediction started")
     prediction(args.folder_root, args.eval_test, args.pattern, args.features, int(args.patch_size_height), int(args.patch_size_width), float(args.depth_min), float(args.depth_max), args)
     dict_experiment["prediction"] = sumarized_prediction_time
-    msg.timemsg("Prediction abgeschlossen")
+    msg.timemsg("Prediction finished")
 
     if (args.features == "cnn"): cnn.close()
 
     # Output Json erzeugen
     create_output_dict(args.output)
-    msg.timemsg("eval json erzeugt")
+    msg.timemsg("generated eval json")
