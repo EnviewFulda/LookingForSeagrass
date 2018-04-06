@@ -1,8 +1,11 @@
 ##################
 #---Experiment1---
 ##################
-GRAPH="/home/jaeger/papers/2018-oceans-seagrass/classify_image_graph_def.pb"
-FOLDER_ROOT="/home/jaeger/papers/2018-oceans-seagrass/dataset"
+# adapt the following three paths
+GRAPH="/path/to/classify_image_graph_def.pb"
+FOLDER_ROOT="/path/to/datasetroot/dataset"
+OUTPUT_PATH="/path/to/output/results"
+
 
 FOLDER_IMAGES="/images"
 FOLDER_GROUND_TRUTH="/ground-truth"
@@ -28,7 +31,7 @@ python3 $MAIN_PROGRAM \
 --eval_validate $EVAL_VALIDATE \
 --patch_size_width $PATCH_SIZE \
 --patch_size_height $PATCH_SIZE \
---output "/home/jaeger/papers/2018-oceans-seagrass/results/exp1-cnn-sp-slic.json" \
+--output "$OUTPUT_PATH/exp1-cnn-sp-slic.json" \
 --depth_min $DEPTH_MIN \
 --depth_max $DEPTH_MAX \
 
@@ -45,7 +48,7 @@ python3 $MAIN_PROGRAM \
 --eval_validate $EVAL_VALIDATE \
 --patch_size_width $PATCH_SIZE \
 --patch_size_height $PATCH_SIZE \
---output "/home/jaeger/papers/2018-oceans-seagrass/results/exp1-hog-sp-slic.json" \
+--output "$OUTPUT_PATH/exp1-hog-sp-slic.json" \
 --depth_min $DEPTH_MIN \
 --depth_max $DEPTH_MAX \
 
@@ -62,7 +65,7 @@ python3 $MAIN_PROGRAM \
 --eval_validate $EVAL_VALIDATE \
 --patch_size_width $PATCH_SIZE \
 --patch_size_height $PATCH_SIZE \
---output "/home/jaeger/papers/2018-oceans-seagrass/results/exp1-lbp-sp-slic.json" \
+--output "$OUTPUT_PATH/exp1-lbp-sp-slic.json" \
 --depth_min $DEPTH_MIN \
 --depth_max $DEPTH_MAX \
 
@@ -80,7 +83,7 @@ python3 $MAIN_PROGRAM \
 --eval_validate $EVAL_VALIDATE \
 --patch_size_width $PATCH_SIZE \
 --patch_size_height $PATCH_SIZE \
---output "/home/jaeger/papers/2018-oceans-seagrass/results/exp1-cnn-rp.json" \
+--output "$OUTPUT_PATH/exp1-cnn-rp.json" \
 --depth_min $DEPTH_MIN \
 --depth_max $DEPTH_MAX \
 
@@ -97,7 +100,7 @@ python3 $MAIN_PROGRAM \
 --eval_validate $EVAL_VALIDATE \
 --patch_size_width $PATCH_SIZE \
 --patch_size_height $PATCH_SIZE \
---output "/home/jaeger/papers/2018-oceans-seagrass/results/exp1-hog-rp.json" \
+--output "$OUTPUT_PATH/exp1-hog-rp.json" \
 --depth_min $DEPTH_MIN \
 --depth_max $DEPTH_MAX \
 
@@ -114,7 +117,7 @@ python3 $MAIN_PROGRAM \
 --eval_validate $EVAL_VALIDATE \
 --patch_size_width $PATCH_SIZE \
 --patch_size_height $PATCH_SIZE \
---output "/home/jaeger/papers/2018-oceans-seagrass/results/exp1-lbp-rp.json" \
+--output "$OUTPUT_PATH/exp1-lbp-rp.json" \
 --depth_min $DEPTH_MIN \
 --depth_max $DEPTH_MAX \
 
@@ -134,7 +137,7 @@ python3 $MAIN_PROGRAM \
 --eval_validate $EVAL_VALIDATE \
 --patch_size_width $PATCH_SIZE \
 --patch_size_height $PATCH_SIZE \
---output "/home/jaeger/papers/2018-oceans-seagrass/results/exp1-hog-sp-cw.json" \
+--output "$OUTPUT_PATH/exp1-hog-sp-cw.json" \
 --depth_min $DEPTH_MIN \
 --depth_max $DEPTH_MAX \
 
@@ -153,7 +156,7 @@ python3 $MAIN_PROGRAM \
 --eval_validate $EVAL_VALIDATE \
 --patch_size_width $PATCH_SIZE \
 --patch_size_height $PATCH_SIZE \
---output "/home/jaeger/papers/2018-oceans-seagrass/results/exp1-lbp-sp-cw.json" \
+--output "$OUTPUT_PATH/exp1-lbp-sp-cw.json" \
 --depth_min $DEPTH_MIN \
 --depth_max $DEPTH_MAX \
 
@@ -171,7 +174,7 @@ python3 $MAIN_PROGRAM \
 --eval_validate $EVAL_VALIDATE \
 --patch_size_width $PATCH_SIZE \
 --patch_size_height $PATCH_SIZE \
---output "/home/jaeger/papers/2018-oceans-seagrass/results/exp1-cnn-sp-cw.json" \
+--output "$OUTPUT_PATH/exp1-cnn-sp-cw.json" \
 --depth_min $DEPTH_MIN \
 --depth_max $DEPTH_MAX \
 

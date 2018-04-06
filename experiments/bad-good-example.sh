@@ -1,8 +1,10 @@
-##################
-#---Experiment2---
-##################
-GRAPH="/home/jaeger/papers/2018-oceans-seagrass/classify_image_graph_def.pb"
-FOLDER_ROOT="/home/jaeger/papers/2018-oceans-seagrass/dataset"
+########################
+#---Bad Good Example---
+########################
+# adapt the following three paths
+GRAPH="/path/to/classify_image_graph_def.pb"
+FOLDER_ROOT="/path/to/datasetroot/dataset"
+OUTPUT_PATH="/path/to/output/results"
 
 FOLDER_IMAGES="/images"
 FOLDER_GROUND_TRUTH="/ground-truth"
@@ -28,7 +30,7 @@ python3 $MAIN_PROGRAM \
 --eval_validate $EVAL_VALIDATE \
 --patch_size_width $PATCH_SIZE \
 --patch_size_height $PATCH_SIZE \
---output "/home/jaeger/papers/2018-oceans-seagrass/results/bad-good-cnn-sp-slic-120-0-2.json" \
+--output "$OUTPUT_PATH/bad-good-cnn-sp-slic-120-0-2.json" \
 --depth_min $DEPTH_MIN \
 --depth_max $DEPTH_MAX \
 
@@ -45,7 +47,7 @@ python3 $MAIN_PROGRAM \
 --eval_validate $EVAL_VALIDATE \
 --patch_size_width $PATCH_SIZE \
 --patch_size_height $PATCH_SIZE \
---output "/home/jaeger/papers/2018-oceans-seagrass/results/bad-good-cnn-rp-120-0-2.json" \
+--output "$OUTPUT_PATH/bad-good-cnn-rp-120-0-2.json" \
 --depth_min $DEPTH_MIN \
 --depth_max $DEPTH_MAX \
 
@@ -62,7 +64,7 @@ python3 $MAIN_PROGRAM \
 --eval_validate $EVAL_VALIDATE \
 --patch_size_width $PATCH_SIZE \
 --patch_size_height $PATCH_SIZE \
---output "/home/jaeger/papers/2018-oceans-seagrass/results/bad-good-cnn-sp-cw-120-0-2.json" \
+--output "$OUTPUT_PATH/bad-good-cnn-sp-cw-120-0-2.json" \
 --depth_min $DEPTH_MIN \
 --depth_max $DEPTH_MAX \
 

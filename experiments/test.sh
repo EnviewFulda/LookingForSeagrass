@@ -1,8 +1,10 @@
 ##################
 #---Experiment1---
 ##################
-GRAPH="/home/thomas/cnn_feature_extractor/tf_inception/classify_image_graph_def.pb"
-FOLDER_ROOT="/home/thomas/experiments/dataset"
+# adapt the following three paths
+GRAPH="/path/to/classify_image_graph_def.pb"
+FOLDER_ROOT="/path/to/datasetroot/dataset"
+OUTPUT_PATH="/path/to/output/results"
 
 FOLDER_IMAGES="/images"
 FOLDER_GROUND_TRUTH="/ground-truth"
@@ -27,6 +29,6 @@ pudb3 ../main.py \
 --eval_validate $EVAL_VALIDATE \
 --patch_size_width $PATCH_SIZE \
 --patch_size_height $PATCH_SIZE \
---output "/home/thomas/experiments/results/exp1-cnn-sp-slic.json" \
+--output "$OUTPUT_PATH/exp1-cnn-sp-slic.json" \
 --depth_min $DEPTH_MIN \
 --depth_max $DEPTH_MAX \
