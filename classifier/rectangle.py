@@ -15,10 +15,10 @@ def ini():
     pass
 
 def show(picture):
-    '''Zeit ein Bild an
+    '''show a picture
 
     Args:
-        picture: Bild
+        picture: image
 
     Returns:
 
@@ -29,10 +29,10 @@ def show(picture):
 
 
 def patches(loaded_picture, coordinates, patch_size_height, patch_size_width):
-    '''Bild zerlegen in Patches
+    '''divide image into patches
 
     Args:
-        picture: Bild
+        picture: image
 
     Returns:
         patches (list)
@@ -50,8 +50,8 @@ def patches(loaded_picture, coordinates, patch_size_height, patch_size_width):
 
 
 def create_coordinates_list (patch_size_height, patch_size_width, image_size_heigh, image_size_width):
-    '''Erstellt eine Koordinaten Liste. Jeder Patch an einer festen Stelle im Bild bekommt eine Koordinate zugeordnet
-       Die Patches werden zeilenweise von links nach rechts iteriert und die Koordinaten gespeichert.
+    '''Creates a coordinate list. Each patch at a fixed position in the image is assigned a coordinate
+       The patches are iterated line by line from left to right and the coordinates are saved.
 
     Args:
 
@@ -59,8 +59,8 @@ def create_coordinates_list (patch_size_height, patch_size_width, image_size_hei
     Returns:
 
     '''
-    high = np.arange(0,image_size_heigh,patch_size_height) # Obere Linke Ecke
-    width = np.arange(0,image_size_width,patch_size_width) # Untere Rechte Ecke
+    high = np.arange(0,image_size_heigh,patch_size_height) # Upper left corner
+    width = np.arange(0,image_size_width,patch_size_width) # Lower right corner
     coordinates = []
     for h in high:
         for w in width:
@@ -69,7 +69,7 @@ def create_coordinates_list (patch_size_height, patch_size_width, image_size_hei
 
 
 def logical_pixelmap(prediction, height, width, coordinates, patch_size_height,patch_size_width):
-    '''Erstellt anhand der Prediction eine logische Pixelmap.
+    '''Creates a logical pixelmap based on the prediction.
 
     Args:
 
@@ -77,13 +77,13 @@ def logical_pixelmap(prediction, height, width, coordinates, patch_size_height,p
     Returns:
 
     '''
-    # logical Pixelmap:    0   Seegras                 1 kein Seegras
+    # logical Pixelmap:    0   seagrass                 1 background
     logical_pixelmap = np.ones(([height,width]), dtype = "uint8")
 
-    for i in range(len(prediction)): # Gehe Array Prediction durch
+    for i in range(len(prediction)): # Go through prediction array 
         w = coordinates[i][0]
         h = coordinates[i][1]
-        if prediction[i]: # 1 = Label für Seegras
-            logical_pixelmap[h:h+patch_size_height, w:w+patch_size_width] = 0 # 0 = Seegras in der logischen Pixelmap
+        if prediction[i]: # 1 = Label for seagrass
+            logical_pixelmap[h:h+patch_size_height, w:w+patch_size_width] = 0 # 0 = Seagrass in the logical pixelmap
 
     return logical_pixelmap

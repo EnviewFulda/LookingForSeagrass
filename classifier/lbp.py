@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 
-
 import cv2
 import numpy as np
 from skimage.feature import local_binary_pattern
@@ -12,7 +11,7 @@ MULTIPLE = 1
 
 
 def ini():
-    '''Initialisierung
+    '''initialization
 
     Args:
 
@@ -23,7 +22,7 @@ def ini():
 
 
 def features(X, mode):
-    '''Feature(s) extrahieren
+    '''extract features
 
     Args:
         X (list):  Patch or Patches
@@ -37,14 +36,12 @@ def features(X, mode):
     n_points = 8 * radius
     METHOD = 'uniform'
 
-    if (mode == MULTIPLE): # Mehrere Features
+    if (mode == MULTIPLE): # may features
         listFeatures = None
         for Patch in X:
             gray_image = cv2.cvtColor(Patch, cv2.COLOR_BGR2GRAY)
 
             feat = local_binary_pattern(gray_image, n_points, radius, METHOD)
-            #x = itemfreq(feat.ravel())
-            #hist = x[:, 1]/sum(x[:, 1])
             tmp = feat.ravel()
             tmp = tmp / np.max(tmp)
             hist = np.histogram(tmp, bins=100)[0]
@@ -55,7 +52,7 @@ def features(X, mode):
                 listFeatures = np.vstack((listFeatures, hist))
         return listFeatures
 
-    if (mode == SINGLE): # Nur ein Feature
+    if (mode == SINGLE): # single feature
         gray_image = cv2.cvtColor(X, cv2.COLOR_BGR2GRAY)
         feat = local_binary_pattern(gray_image, n_points, radius, METHOD)
 
@@ -67,10 +64,10 @@ def features(X, mode):
 
 
 def featurelist(path_train_set):
-    '''Trainings Patches laden und Features extrahieren
+    '''load training patches and extract features
 
     Args:
-        path_train_set (list): Pfade auf Patches
+        path_train_set (list): paths to training patches
 
 
     Returns:

@@ -5,7 +5,7 @@ import pandas as pd
 
 
 def ini():
-    '''Initialisierung
+    '''initialization
 
     Args:
 
@@ -17,7 +17,7 @@ def ini():
 
 
 def save(picture_name, picture_ratio, output_folder):
-    '''CSV File erstellen
+    '''create CSV file
 
     Args:
 

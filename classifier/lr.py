@@ -30,12 +30,13 @@ def ini(path=None):
             msg.timemsg('Loaded classifier from: {}'.format(path))
         else:
             msg.timemsg('Path to classifier does not exist: {}'.format(path))
+    # SVM 
     #clf = svm.SVC(kernel='linear', C = 1.0) # SVM
 
 
 
 def train(features, labels, path='clf.pkl'):
-    '''Klassifizierer trainieren
+    '''train classifier
 
     Args:
         features (list): Features
@@ -68,12 +69,12 @@ def predict(X, mode):
 
     '''
     global clf
-    if (mode == MULTIPLE): # Mehrere Features
+    if (mode == MULTIPLE): # many features
         #msg.timemsg("predict_shape: {}".format(X.shape))
         return clf.predict(X)
 
     if (mode == SINGLE):
-        return np.squeeze(np.array(clf.predict(X.reshape(1,-1)))) # Eine Dimension zuviel, diese entfernen
+        return np.squeeze(np.array(clf.predict(X.reshape(1,-1)))) # convert to array, one dimension too much, remove it
 
 def save (folder):
     '''Save

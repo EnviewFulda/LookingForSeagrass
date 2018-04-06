@@ -3,7 +3,7 @@
 import json
 
 def ini():
-    '''Initialisierung
+    '''initialization
 
     Args:
 
@@ -15,10 +15,10 @@ def ini():
 
 
 def labels(json_file):
-    '''Liefert die Labels
+    '''get labels
 
     Args:
-        json_file (dict): Pfade und Labels
+        json_file (dict): paths and labels
 
     Returns:
         labels (list)
@@ -26,7 +26,7 @@ def labels(json_file):
     labels = []
     for i in json.load(open(json_file)):
         for key, value in i.items():
-            labels.append(int(value)) # Casten auf Int
+            labels.append(int(value)) # cast to int
     return labels
 
 
@@ -34,7 +34,7 @@ def path(json_file):
     '''Liefert die Pfade
 
     Args:
-        json_file (dict): Pfade und Labels
+        json_file (dict): paths and labels
 
     Returns:
         pfade (list)

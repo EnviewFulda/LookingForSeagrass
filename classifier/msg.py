@@ -20,16 +20,16 @@ def ini(path):
 
 
 def timemsg (msg):
-    '''Gitb eine Nachricht mit dem Format [h, min, sec] und die Nachricht aus
+    '''Outputs a message in the format[h, min, sec] and the message
 
     Args:
-        msg: Nachricht
+        msg: message
 
     Returns:
 
     '''
     global start_time
-    elapsed_time = time.time() - start_time # Sekunden
+    elapsed_time = time.time() - start_time # seconds
 
     hour = math.floor( elapsed_time / 3600 )
     minute = math.floor( (elapsed_time%3600) / 60 )

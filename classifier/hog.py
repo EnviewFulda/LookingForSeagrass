@@ -34,7 +34,7 @@ def ini():
 
 
 def features(X, mode):
-    '''Feature exreaction
+    '''Feature extraction
 
     Args:
         X (list):  Patch or Patches
@@ -58,7 +58,7 @@ def features(X, mode):
             listFeatures.append(feat)
         return listFeatures
 
-    if (mode == SINGLE): # one feature
+    if (mode == SINGLE): # single feature
         gray_image = cv2.cvtColor(X, cv2.COLOR_BGR2GRAY)
         feat = hogobj.compute(gray_image,winStride,padding,locations)
         feat = np.squeeze(np.array(feat)) # remove one dimension

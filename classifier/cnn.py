@@ -16,23 +16,22 @@ class CnnFeat(object):
     
     
     def features(self, X, mode):
-        # nur einmal ausführen
-        next_to_last_tensor = self.sess.graph.get_tensor_by_name('pool_3:0') # ---------------------------- aus dem pool_3:0 Layer werden die Features herausgeholt
+        next_to_last_tensor = self.sess.graph.get_tensor_by_name('pool_3:0') # get the features from the pool_3:0 layer
 
-        if (mode == MULTIPLE): # Mehrere Features
+        if (mode == MULTIPLE): # many features
             listFeatures = []
             len_x = len(X)
             for i, Patch in enumerate(X):
                 feat = self.sess.run(next_to_last_tensor,{'DecodeJpeg:0': Patch})
-                feat = np.squeeze(np.array(feat)) # In array überführen, # Eine Dimension zuviel, diese entfernen
+                feat = np.squeeze(np.array(feat)) # convert to array, one dimension too much, remove it
                 listFeatures.append(feat)
                 if i % 500 == 0:
                     print('CNN features progress: {}%'.format(float(i/len_x)*100))
             return listFeatures
 
-        if (mode == SINGLE): # Nur ein Feature
+        if (mode == SINGLE): # single feature
             feat = self.sess.run(next_to_last_tensor,{'DecodeJpeg:0': X})
-            feat = np.squeeze(np.array(feat)) # In array überführen, # Eine Dimension zuviel, diese entfernen
+            feat = np.squeeze(np.array(feat)) # convert to array, one dimension too much, remove it
             return feat
     
     def close(self):
@@ -42,7 +41,7 @@ def close ():
     cnn_instance.close()
     
 def ini (folder):
-    '''Initialisierung
+    '''initialization
 
     Args:
 
@@ -58,7 +57,7 @@ def ini (folder):
     cnn_instance = CnnFeat()
 
 def features(X, mode):
-    '''Feature(s) extrahieren
+    '''extract features
 
     Args:
         X (list):  Patch or Patches
@@ -68,33 +67,31 @@ def features(X, mode):
         features (list)
     '''
     config = tf.ConfigProto()
-#    config.gpu_options.allow_growth=True
     with tf.Session(config=config) as sess:
-        # nur einmal ausführen
-        next_to_last_tensor = sess.graph.get_tensor_by_name('pool_3:0') # ---------------------------- aus dem pool_3:0 Layer werden die Features herausgeholt
+        next_to_last_tensor = sess.graph.get_tensor_by_name('pool_3:0') # get the features from the pool_3:0 layer
 
-        if (mode == MULTIPLE): # Mehrere Features
+        if (mode == MULTIPLE): # many features
             listFeatures = []
             len_x = len(X)
             for i, Patch in enumerate(X):
                 feat = sess.run(next_to_last_tensor,{'DecodeJpeg:0': Patch})
-                feat = np.squeeze(np.array(feat)) # In array überführen, # Eine Dimension zuviel, diese entfernen
+                feat = np.squeeze(np.array(feat)) # convert to array, one dimension too much, remove it
                 listFeatures.append(feat)
                 if i % 500 == 0:
                     print('CNN features progress: {}%'.format(float(i/len_x)*100))
             return listFeatures
 
-        if (mode == SINGLE): # Nur ein Feature
+        if (mode == SINGLE): # single feature
             feat = sess.run(next_to_last_tensor,{'DecodeJpeg:0': X})
-            feat = np.squeeze(np.array(feat)) # In array überführen, # Eine Dimension zuviel, diese entfernen
+            feat = np.squeeze(np.array(feat)) # convert to array, one dimension too much, remove it
             return feat
 
 
 def featurelist(path_train_set):
-    '''Trainings Patches laden und Features extrahieren
+    '''load training patches and extract features
 
     Args:
-        path_train_set (list): Pfade auf Patches
+        path_train_set (list): path to training patches
 
 
     Returns:

@@ -87,7 +87,7 @@ def left_center_grid_search (img, patch_height, patch_width):
     image_height = img.shape[0]
     image_width = img.shape[1]
 
-    y_koor = np.arange(0,image_height,patch_height) # Höhen unterteilen
+    y_koor = np.arange(0,image_height,patch_height) # subdivide heights
     pos_patches_koor = []
     neg_patches_koor = []
 
@@ -109,8 +109,8 @@ def left_center_grid_search (img, patch_height, patch_width):
 
 
 def generate_patches (rgb_image, rgb_pixelmap, patch_height, patch_width):
-    #gray_pixelmap = cv2.cvtColor(rgb_pixelmap, cv2.COLOR_BGR2GRAY) # In Grauwertbild wandeln
-    logical_pixelmap = binarize(rgb_pixelmap, threshold=127) # Binarisieren
+    #gray_pixelmap = cv2.cvtColor(rgb_pixelmap, cv2.COLOR_BGR2GRAY) # convert to grayscale image
+    logical_pixelmap = binarize(rgb_pixelmap, threshold=127) # binarisation
 
     pos_patches_koor, neg_patches_koor = left_center_grid_search(logical_pixelmap, patch_height, patch_width) # Get positve/negative patches coordinates from patches search algorithm
 
@@ -128,7 +128,7 @@ if __name__ == '__main__':
     parser.add_argument("--json_file", help="annotation_set.json")
     parser.add_argument("--patch_width", help="120")
     parser.add_argument("--patch_height", help="120")
-    parser.add_argument("--invert", help="0,1") # Seagras/Not Seagras
+    parser.add_argument("--invert", help="0,1") # seagrass/background
     parser.add_argument("--neg_patches", help="path")
     parser.add_argument("--pos_patches", help="path")
     args = parser.parse_args()

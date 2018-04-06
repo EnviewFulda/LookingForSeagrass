@@ -16,11 +16,11 @@ from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import binarize
 import sys
 
-# In der CSV Datei die Spalten Indizes
+# in the CSV file the columns Indices
 FILE_PICTURE = 1
 DEPTH4_INDEX = 8
 
-# Klassen
+# classes
 aClass_Low = np.arange(0.0, 100.0, 1.0)
 aClass_High= np.arange(1.0, 101.0, 1.0)
 
@@ -29,21 +29,21 @@ def create_random_index_lists (length, percentage_train_set, percentage_test_set
     train_len = int (length * float(percentage_train_set))
     test_len = int (length * float(percentage_test_set))
 
-    x = np.arange(length) # Array mit Zahlen von 0 bis Anzahl der Elemente
+    x = np.arange(length) # array with numbers from 0 to number of elements
 
-    np.random.shuffle(x) # Verwüfeln
+    np.random.shuffle(x) # scrambling
 
     train_set_rndnum = x[0:train_len]
-    x = np.setdiff1d(x,train_set_rndnum) # train set aus Liste löschen
+    x = np.setdiff1d(x,train_set_rndnum) # delete train set from list
 
-    np.random.shuffle(x) # Verwüfeln, weil setdiff1d aufsteigend sortiert
+    np.random.shuffle(x) # scrambling, because setdiff1d is sorted in ascending order
 
     test_set_rndnum = x[0:test_len]
-    x = np.setdiff1d(x,test_set_rndnum) # test set aus Liste löschen
+    x = np.setdiff1d(x,test_set_rndnum) # delete test set from list
 
-    np.random.shuffle(x) # Verwüfeln, weil setdiff1d aufsteigend sortiert
+    np.random.shuffle(x) # scrambling, because setdiff1d is sorted in ascending order
 
-    validate_set_rndnum = x # validate set besteht aus dem Rest
+    validate_set_rndnum = x # validate set contains rest
 
     return train_set_rndnum, test_set_rndnum, validate_set_rndnum
 
@@ -79,21 +79,21 @@ def class_dict_to_datasets (class_dict, train_percentage, test_percentage):
 
         # debug
         if len(train_set_rndnum):
-            # Aus dirname einen Ordner rauspicken
+            # Get a folder from dirname
             dirname = os.path.dirname(class_dict[c][i]["image"])
             split_dirname = dirname.split("/")
             ordner_name = split_dirname[-1]
             print(ordner_name + " Train-Set    " + str(len(train_set_rndnum)))
 
         if len(test_set_rndnum):
-            # Aus dirname einen Ordner rauspicken
+            # Get a folder from dirname
             dirname = os.path.dirname(class_dict[c][i]["image"])
             split_dirname = dirname.split("/")
             ordner_name = split_dirname[-1]
             print(ordner_name + " Test-Set     " + str(len(test_set_rndnum)))
 
         if len(validate_set_rndnum):
-            # Aus dirname einen Ordner rauspicken
+            # Get a folder from dirname
             dirname = os.path.dirname(class_dict[c][i]["image"])
             split_dirname = dirname.split("/")
             ordner_name = split_dirname[-1]
@@ -106,7 +106,7 @@ def class_dict_to_datasets (class_dict, train_percentage, test_percentage):
 
 
 def save_json(path, list):
-    if len(list): # Wenn Liste nicht leer ist
+    if len(list): # if list not empty
         your_json = json.dumps(list)
         parsed = json.loads(your_json)
         a = json.dumps(parsed, indent=4, sort_keys=True)
@@ -118,15 +118,15 @@ def save_json(path, list):
 def create_notannotated_dict(dict_notannotated_path, df):
 
     list_notannotated = []
-    # Bildersuche
+    # picture search
     for i in df.values:
-        picture_name = i[FILE_PICTURE] # Hole Bildnamen aus der CSV Datei
+        picture_name = i[FILE_PICTURE] # get image filename from CSV file
         try:
-            path_image = dict_notannotated_path[picture_name] # Versuche Bildnamen in dict "images" zu finden
+            path_image = dict_notannotated_path[picture_name] # try to find image names in dict "images"
 
             depth4 = i[DEPTH4_INDEX]
 
-            for a in range(len(aClass_Low)): # Klassen iterieren
+            for a in range(len(aClass_Low)): # iterate classes
                 if depth4 >= aClass_Low[a] and depth4 < aClass_High[a]:
 
                     dict_bundle = dict()
@@ -147,18 +147,18 @@ def create_class_dict(dict_images_path, dict_groundtruth_path, df):
     matching_counter = 0
 
     class_dict = {}
-    # Bildersuche
+    # picture search
     for i in df.values:
-        picture_name = i[FILE_PICTURE] # Hole Bildnamen aus der CSV Datei
+        picture_name = i[FILE_PICTURE] # get image filename from CSV file
         try:
-            path_image = dict_images_path[picture_name] # Versuche Bildnamen in dict "images" zu finden
+            path_image = dict_images_path[picture_name] # try to find image names in dict "images"
             try:
-                path_groundtruth = dict_groundtruth_path["pm_" + picture_name] # Verscuhe "pm_" + Bildnamen in dict "ground-truth" zu finden
+                path_groundtruth = dict_groundtruth_path["pm_" + picture_name] # try to find "pm_" + image names in dict "ground-truth"
                 matching_counter += 1
 
                 depth4 = i[DEPTH4_INDEX]
 
-                for a in range(len(aClass_Low)): # Klassen iterieren
+                for a in range(len(aClass_Low)): # iterate classes
                     if depth4 >= aClass_Low[a] and depth4 < aClass_High[a]:
 
                         dict_bundle = dict()
@@ -184,19 +184,19 @@ def create_class_dict(dict_images_path, dict_groundtruth_path, df):
 
 
 def image_path_to_dict (path):
-    # Suche nach .jpg Bildern und speicher sie in einem dictionary
+    # Search for.jpg images and save them in a dictionary
     dict_images_path = dict()
     for path, dirs, files in os.walk(path):
         for f in files:
             if fnmatch.fnmatch(f, '*.jpg'):
-                dict_images_path[f] = os.path.join(path, f) # key = Bildname
+                dict_images_path[f] = os.path.join(path, f) # key = filename
     return dict_images_path
 
 
 def coverage_seagras_in_pixelmap (path):
     rgb_pixelmap = cv2.imread(path)
-    gray_pixelmap = cv2.cvtColor(rgb_pixelmap, cv2.COLOR_BGR2GRAY) # In Grauwertbild wandeln
-    logical_pixelmap = binarize(gray_pixelmap, threshold=127) # Binarisieren
+    gray_pixelmap = cv2.cvtColor(rgb_pixelmap, cv2.COLOR_BGR2GRAY) # Convert to grayscale image
+    logical_pixelmap = binarize(gray_pixelmap, threshold=127) # binarisation
 
     return 1.0 - np.mean(logical_pixelmap)
 

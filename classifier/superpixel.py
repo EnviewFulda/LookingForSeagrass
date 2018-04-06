@@ -32,10 +32,10 @@ def ini():
 
 
 def patches(Picture, method, patch_size_height, patch_size_width, height, width):
-    '''Bild zerlegen in Superpixel (Patches)
+    '''Dividing an image into superpixels (patches)
 
     Args:
-        picture: Bild
+        picture: image
 
     Returns:
 
@@ -55,31 +55,31 @@ def patches(Picture, method, patch_size_height, patch_size_width, height, width)
         gradient = sobel(rgb2gray(Picture))
         segments = watershed(gradient, markers=number_of_segments, compactness=0.0001)
 
-    #pic.show(mark_boundaries(Picture, segments, (255,255,255))) # Segmente anzeigen
+    #pic.show(mark_boundaries(Picture, segments, (255,255,255))) # show segments
 
 
     original_image = np.copy(Picture)
 
-    for i in np.unique(segments): # Anzahl der Segmente
+    for i in np.unique(segments): # number of segments
 
 
-        # Zeichne Maske
-        image_mask = np.zeros(Picture.shape[:2], dtype = "uint8") # 3D in 1D
+        # draw mask
+        image_mask = np.zeros(Picture.shape[:2], dtype = "uint8") # 3D to 1D
         w = np.where(segments == i)
         image_mask[w] = 255
 
-        x,y,w,h = cv2.boundingRect(image_mask) # Rechteck berechnen
+        x,y,w,h = cv2.boundingRect(image_mask) # calculate rectangle
 
         segment_mask_in_original_image = cv2.bitwise_and(original_image,original_image,mask = image_mask)
 
         if (with_neightbor):
-            # Mit Nachbarschaft
+            # with neighborhood
             segment_cropped_with_neightbor = original_image[y:y+h,x:x+w]
             segment_cropped_with_neightbor_and_reqized = cv2.resize(segment_cropped_with_neightbor, (patch_size_width, patch_size_height)) # width, height
 
             listPatches.append(segment_cropped_with_neightbor_and_reqized)
         else:
-            # Ohne Nachbarschaft
+            # without neighborhood
             segment_cropped_without_neightbor = segment_mask_in_original_image[y:y+h,x:x+w]
             segment_cropped_without_neightbor_and_reqized = cv2.resize(segment_cropped_without_neightbor, (patch_size_width, patch_size_height)) # width, height
 
@@ -91,7 +91,7 @@ def patches(Picture, method, patch_size_height, patch_size_width, height, width)
 
 
 def logical_pixelmap(segments, prediction, height, width):
-    '''Erstellt anhand der Prediction eine logische Pixelmap.
+    '''Creates a logical pixelmap based on the prediction.
 
     Args:
 
@@ -99,11 +99,11 @@ def logical_pixelmap(segments, prediction, height, width):
     Returns:
 
     '''
-    # logical Pixelmap:    0   Seegras                 1 kein Seegras
+    # logical Pixelmap:    0   seagrass                 1 background
     logical_pixelmap = np.ones(([height,width]), dtype = "uint8")
 
-    for i in range(len(prediction)): # Gehe Array Prediction durch
-        if prediction[i]: # 1 = Label für Seegras
+    for i in range(len(prediction)): # go through prediction array
+        if prediction[i]: # 1 = label for seagrass
             w = np.where(segments == i)
-            logical_pixelmap[w] = 0 # 0 = Seegras in der logischen Pixelmap
+            logical_pixelmap[w] = 0 # 0 = seagrass in the logical pixel map
     return logical_pixelmap

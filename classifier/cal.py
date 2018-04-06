@@ -3,7 +3,7 @@
 import numpy as np
 
 def ini():
-    '''Initialisierung
+    '''initialization
 
     Args:
 
@@ -15,26 +15,26 @@ def ini():
 
 
 def accuracy(Yte_predict, Yte):
-    '''Überprüfung der richtigen Label mit den vorhergesagten
+    '''verification of the correct label with the predicted one
 
     Args:
-        Yte_predict (list): vorhergesagte Labels (vom Computer)
-        Yte (list): wahren Labels (vom Mensch)
+        Yte_predict (list): predicted labels (by computer)
+        Yte (list): true labels (by human)
 
 
     Returns:
-        accuracy (list): Übereinstimmung
+        accuracy (list): congruity
     '''
     return np.mean(Yte_predict == Yte)
 
 
 def ratio(Yte_predict):
-    '''Prozentualer Anteil aus Array
+    '''Percentage portion of array
 
     Args:
-        Yte_predict (list): vorhergesagte Labels (vom Computer)
+        Yte_predict (list): predicted labels (by computer)
 
     Returns:
-        accuracy (list): relativer Anteil der Labels "1" im Array
+        accuracy (list): relative part of the labels "1" in the array
     '''
     return np.mean(Yte_predict == 1)
