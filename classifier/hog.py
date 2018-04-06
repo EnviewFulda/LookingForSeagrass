@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import cv2
 import numpy as np
 
@@ -6,7 +8,7 @@ MULTIPLE = 1
 
 
 def ini():
-    '''Initialisierung
+    '''initialization
 
     Args:
 
@@ -32,7 +34,7 @@ def ini():
 
 
 def features(X, mode):
-    '''Feature(s) extrahieren
+    '''Feature exreaction
 
     Args:
         X (list):  Patch or Patches
@@ -45,30 +47,30 @@ def features(X, mode):
     padding = (8,8)
     locations = ((10,20),)
 
-    if (mode == MULTIPLE): # Mehrere Features
+    if (mode == MULTIPLE): # many features
         listFeatures = []
 
 
         for Patch in X:
             gray_image = cv2.cvtColor(Patch, cv2.COLOR_BGR2GRAY)
             feat = hogobj.compute(gray_image,winStride,padding,locations)
-            feat = np.squeeze(np.array(feat)) # In array überführen, # Eine Dimension zuviel, diese entfernen
+            feat = np.squeeze(np.array(feat)) # remove one dimension
             listFeatures.append(feat)
         return listFeatures
 
-    if (mode == SINGLE): # Nur ein Feature
+    if (mode == SINGLE): # one feature
         gray_image = cv2.cvtColor(X, cv2.COLOR_BGR2GRAY)
         feat = hogobj.compute(gray_image,winStride,padding,locations)
-        feat = np.squeeze(np.array(feat)) # In array überführen, # Eine Dimension zuviel, diese entfernen
+        feat = np.squeeze(np.array(feat)) # remove one dimension
         return feat
 
 
 
 def featurelist(path_train_set):
-    '''Trainings Patches laden und Features extrahieren
+    '''load training patches and extract features
 
     Args:
-        path_train_set (list): Pfade auf Patches
+        path_train_set (list): path to patches
 
 
     Returns:

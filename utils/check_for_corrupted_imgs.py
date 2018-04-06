@@ -1,10 +1,16 @@
+#!/usr/bin/env python
+
 from os import listdir
 import os
 from PIL import Image
 import cv2
+import argparse
    
-IMG_FOLDER = '/home/thomas/experiments/dataset/images'
-for path, dirnames, filenames in os.walk(IMG_FOLDER):
+parser = argparse.ArgumentParser()
+parser.add_argument("--imgdir", help="Path to folder with images to check")
+args = parser.parse_args()
+
+for path, dirnames, filenames in os.walk(args.imgdir):
     for filename in filenames:
         if filename.endswith('.jpg'):
             try:

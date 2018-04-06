@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 from skimage.segmentation import slic
 from skimage.segmentation import mark_boundaries
 from skimage.util import img_as_float
@@ -16,7 +18,7 @@ with_neightbor = 1
 
 
 def ini():
-    '''Initialisierung
+    '''initialization
 
     Args:
 

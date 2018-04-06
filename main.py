@@ -24,8 +24,6 @@ import classifier.eval_segm as eval_segm
 from skimage.io import imread
 
 from utils import generate_patches
-
-
 from utils.generate_patches import generate_patches
 
 import time
@@ -41,8 +39,6 @@ dict_input = dict()
 dict_output = dict()
 dict_experiment = dict()
 list_eval = []
-
-
 
 def rgb_pixelmap_to_logical_pixelmap (rgb_pixelmap):
     ''' Turn image into logical binary pixel map.
@@ -106,7 +102,6 @@ def ink_image(image, pixel_map):
 
     return return_image
 
-
 def generate_training_data(root_path, json_path, patch_size_height, patch_size_width, depth_min, depth_max, show=False, batch_size=2000):
     list_patches = []
     list_labels = []
@@ -152,7 +147,6 @@ def generate_training_data(root_path, json_path, patch_size_height, patch_size_w
             else:
                 msg.timemsg('Could not load image: {}'.format(path_rgb_image))
     yield list_patches, list_labels
-
 
 def train(root_path, json_path, features, patch_size_height, patch_size_width, graph, depth_min, depth_max, args):
 

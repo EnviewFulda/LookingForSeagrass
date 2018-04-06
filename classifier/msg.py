@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 
 import numpy as np
 import time
@@ -5,7 +6,7 @@ import math
 import logging
 
 def ini(path):
-    '''Initialisierung
+    '''initialization
 
     Args:
 

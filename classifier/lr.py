@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 from sklearn import svm
 import numpy as np
 from sklearn.externals import joblib
@@ -12,7 +14,7 @@ MULTIPLE = 1
 
 
 def ini(path=None):
-    '''Initialisierung
+    '''initialization
 
     Args:
 

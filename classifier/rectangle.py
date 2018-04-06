@@ -1,8 +1,10 @@
+#!/usr/bin/env python
+
 import cv2
 import numpy as np
 
 def ini():
-    '''Initialisierung
+    '''initialization
 
     Args:
 
