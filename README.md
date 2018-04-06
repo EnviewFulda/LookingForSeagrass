@@ -6,25 +6,52 @@ Using this dataset, we tested a superpixel classification of seagrass images. To
 
 This project is a joint work between *University of Zadar - Croatia* and *University of Applied Sciences Fulda - Germany*
 ### Envolved People
-* Dr. Stewart T. Schultz, Zadar
-* Dr. Claudia Kruschel, Zadar
-* Dr. Viviane Wolff,  Fulda
-* Dr. Klaus Fricke-Neuderth, Fulda
 * Gereon Reus, Fulda
 * Thomas Möller, Fulda
 * Jonas Jäger, Fulda
 * Julian Hasenauer, Fulda
+* Dr. Stewart T. Schultz, Zadar
+* Dr. Claudia Kruschel, Zadar
+* Dr. Viviane Wolff,  Fulda
+* Dr. Klaus Fricke-Neuderth, Fulda
+
 
 ### Paper
 
 The full paper **Looking for Seagrass: Deep Learning for Visual Coverage Estimation (accepted for publication@IEEE - OCEANS 2018 Kobe)** is available at: [HS Fulda](https://www.hs-fulda.de/fileadmin/user_upload/FB_ET/Projekte_Forschung/Enview_Jaeger/EnView_News_2018-04/Conference_Kobe_2018_Seagrass.pdf)
 
-## Dataset
+### Dataset
 
 [looking-for-seagrass-dataset](https://drive.google.com/open?id=1X0pmRIkPRC672_vuWqotfLdgbHx1QpFZ)
 
-## Utils
-
-## Experiments
 ### Deep Net for feature extraction
 http://download.tensorflow.org/models/image/imagenet/inception-2015-12-05.tgz
+
+## Experiments
+### Getting started
+#### Dependencies
+* Anaconda 3
+* CUDA 8 & cuDNN 6
+* VirtualEnv (Dependencies located in conda-env.yml)
+
+#### Checklist
+1. Install dependencies 
+2. Create VirtualEnv
+3. Download InceptionNet V3 Graph 
+4. Download LookingForSeagrass Dataset (and extract)
+5. Adapt three paths in experiment scripts
+6. Activate Virtual Env
+7. Run experiments 
+
+#### Paths in experiments
+```
+#Path to InceptionNetV3 ProtoBuf
+GRAPH="/path/to/classify_image_graph_def.pb"
+
+# Root Path of LookingForSeagrass Dataset
+FOLDER_ROOT="/path/to/datasetroot/dataset"
+
+# Path for storing your results
+OUTPUT_PATH="/path/to/output/results"
+```
+
