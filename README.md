@@ -55,3 +55,16 @@ FOLDER_ROOT="/path/to/datasetroot/dataset"
 OUTPUT_PATH="/path/to/output/results"
 ```
 
+### Citation
+Please cite our accepted Paper:
+```
+@unpublished{Reus2018,
+title = {Visual Fish Tracking: Combining a Two-Stage Graph Approach with CNN-Features},
+author = {Gereon Reus and Thomas M{\"o}ller and Jonas J{\"a}ger and Stewart T. Schultz and Claudia Kruschel and Julian Hasenauer and Viviane Wolff and Klaus Fricke-Neuderth},
+booktitle = {MTS/IEEE OCEANS Conference Aberdeen},
+year = {2018},
+note = {accepted for publication}
+}
+```
+
+
