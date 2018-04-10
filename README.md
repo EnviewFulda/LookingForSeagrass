@@ -61,7 +61,7 @@ Please cite our accepted Paper:
 @unpublished{Reus2018,
 title = {Looking for Seagrass: Deep Learning for Visual Coverage Estimation},
 author = {Gereon Reus and Thomas M{\"o}ller and Jonas J{\"a}ger and Stewart T. Schultz and Claudia Kruschel and Julian Hasenauer and Viviane Wolff and Klaus Fricke-Neuderth},
-booktitle = {MTS/IEEE OCEANS Conference Aberdeen},
+booktitle = {MTS/IEEE OCEANS Conference Kobe},
 year = {2018},
 note = {accepted for publication}
 }
