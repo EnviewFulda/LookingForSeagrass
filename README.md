@@ -59,7 +59,7 @@ OUTPUT_PATH="/path/to/output/results"
 Please cite our Paper:
 ```
 @INPROCEEDINGS{8559302,
-author={G. Reus and T. Möller and J. Jäger and S. T. Schultz and C. Kruschel and J. Hasenauer and V. Wolff and K. Fricke-Neuderth},
+author={G. Reus and T. M{\"o}ller and J. J{\"a}ger and S. T. Schultz and C. Kruschel and J. Hasenauer and V. Wolff and K. Fricke-Neuderth},
 booktitle={2018 OCEANS - MTS/IEEE Kobe Techno-Oceans (OTO)},
 title={Looking for Seagrass: Deep Learning for Visual Coverage Estimation},
 year={2018},
