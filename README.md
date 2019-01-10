@@ -18,7 +18,7 @@ This project is a joint work between *University of Zadar - Croatia* and *Univer
 
 ### Paper
 
-The full paper **Looking for Seagrass: Deep Learning for Visual Coverage Estimation (accepted for publication@IEEE - OCEANS 2018 Kobe)** is available at: [HS Fulda](https://www.hs-fulda.de/fileadmin/user_upload/FB_ET/Projekte_Forschung/Enview_Jaeger/EnView_News_2018-04/Conference_Kobe_2018_Seagrass.pdf)
+The full paper **Looking for Seagrass: Deep Learning for Visual Coverage Estimation (IEEE - OCEANS 2018 Kobe)** is available at: [HS Fulda](https://www.hs-fulda.de/fileadmin/user_upload/FB_ET/Projekte_Forschung/Enview_Jaeger/EnView_News_2018-04/Conference_Kobe_2018_Seagrass.pdf)
 
 ### Dataset
 
@@ -56,15 +56,20 @@ OUTPUT_PATH="/path/to/output/results"
 ```
 
 ### Citation
-Please cite our accepted Paper:
+Please cite our Paper:
 ```
-@unpublished{Reus2018,
-title = {Looking for Seagrass: Deep Learning for Visual Coverage Estimation},
-author = {Gereon Reus and Thomas M{\"o}ller and Jonas J{\"a}ger and Stewart T. Schultz and Claudia Kruschel and Julian Hasenauer and Viviane Wolff and Klaus Fricke-Neuderth},
-booktitle = {MTS/IEEE OCEANS Conference Kobe},
-year = {2018},
-note = {accepted for publication}
-}
+@INPROCEEDINGS{8559302,
+author={G. Reus and T. Möller and J. Jäger and S. T. Schultz and C. Kruschel and J. Hasenauer and V. Wolff and K. Fricke-Neuderth},
+booktitle={2018 OCEANS - MTS/IEEE Kobe Techno-Oceans (OTO)},
+title={Looking for Seagrass: Deep Learning for Visual Coverage Estimation},
+year={2018},
+volume={},
+number={},
+pages={1-6},
+keywords={},
+doi={10.1109/OCEANSKOBE.2018.8559302},
+ISSN={},
+month={May},}
 ```
 
 
